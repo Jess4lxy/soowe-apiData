@@ -27,11 +27,11 @@ export class OrganizacionSQL {
     fecha_modificacion?: Date;
 
     @OneToMany(() => EnfermeroSQL, enfermero => enfermero.organizacion)
-    enfermeros: EnfermeroSQL[] = [];
+    enfermeros?: EnfermeroSQL[];
 
     @OneToMany(() => UsuarioSQL, usuario => usuario.organizacion)
-    usuarios_admin: UsuarioSQL[] = [];
+    usuarios_admin?: UsuarioSQL[];
 
     @OneToMany(() => SolicitudSQL, solicitudes => solicitudes.organizacion)
-    solicitudes: SolicitudSQL[] = [];
+    solicitudes?: SolicitudSQL[];
 }
