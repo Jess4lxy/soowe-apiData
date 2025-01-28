@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { OrganizacionSQL } from './organizacionSQL.model';
+import { ServicioSolicitudSQL } from './servicio_solicitud.model';
 
 @Entity('solicitudes')
 export class SolicitudSQL {
@@ -21,4 +22,7 @@ export class SolicitudSQL {
 
     @Column({ type: 'timestamp', nullable: true })
     fecha_respuesta?: Date;
+
+    @OneToMany(() => ServicioSolicitudSQL, (servicioSolicitud) => servicioSolicitud.solicitud)
+    servicioSolicitudes?: ServicioSolicitudSQL[];
 }

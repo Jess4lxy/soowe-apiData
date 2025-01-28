@@ -15,7 +15,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     res.status(500).json({ message: 'Something went wrong!' });
 });
 
-// Rutas de la API
+// API routes
 app.use('/api/enfermeros', EnfermeroSQLrouter);
 
 export default app;
