@@ -1,12 +1,12 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-interface IResena {
+export interface IResena {
     calificacion : number;
     comentario: string;
     usuario_id: number;
 }
 
-interface IEnfermero extends Document {
+export interface IEnfermero extends Document {
     nombre: string;
     apellido: string;
     especialidad: string;

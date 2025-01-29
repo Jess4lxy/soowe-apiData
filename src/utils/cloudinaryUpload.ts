@@ -1,6 +1,6 @@
 import cloudinary from "../config/cloudinaryConfig";
 
-export const subirPerfil = async (rutaLocal: string): Promise<string> => {
+export const uploadProfile = async (rutaLocal: string): Promise<string> => {
     try {
         const resultado = await cloudinary.uploader.upload(rutaLocal, {
             folder: 'soowie/perfiles', // folder
