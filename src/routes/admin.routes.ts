@@ -3,9 +3,11 @@ import { asyncHandler } from '../middlewares/asyncHandler';
 import EnfermeroController from '../controllers/enfermero.controller';
 import { validateEnfermero, validateEnfermeroRules } from '../middlewares/validateEnfermeroSQL';
 import organizacionController from '../controllers/organizacion.controller';
-import { validateOrganizacion, validateOrganizacionRules } from '../middlewares/validateOrganizacionSQL';4
+import { validateOrganizacion, validateOrganizacionRules } from '../middlewares/validateOrganizacionSQL';
 import AdministradorController from '../controllers/administrador.controller';
 import { validateAdministrador, validateAdministradorRules } from '../middlewares/validateAdministrador';
+import categoriaController from '../controllers/categoria.controller';
+import { validateCategoria, validateCategoriaRules } from '../middlewares/validateCategoria';
 
 const adminRouter = Router();
 
@@ -33,6 +35,14 @@ adminRouter.get('/administradores/:id', asyncHandler(AdministradorController.get
 adminRouter.post('/administradores', [...validateAdministradorRules, validateAdministrador], asyncHandler(AdministradorController.createAdmin.bind(AdministradorController)));
 adminRouter.put('/administradores/:id', [...validateAdministradorRules, validateAdministrador], asyncHandler(AdministradorController.updateAdmin.bind(AdministradorController)));
 adminRouter.delete('/administradores/:id', asyncHandler(AdministradorController.deleteAdmin.bind(AdministradorController)));
+
+// categorias routes
+adminRouter.get('/categorias', asyncHandler(categoriaController.getAllCategorias.bind(categoriaController)));
+adminRouter.get('/categorias/:id', asyncHandler(categoriaController.getCategoriaById.bind(categoriaController)));
+adminRouter.post('/categorias', [...validateCategoriaRules, validateCategoria], asyncHandler(categoriaController.createCategoria.bind(categoriaController)));
+adminRouter.put('/categorias/:id', [...validateCategoriaRules, validateCategoria], asyncHandler(categoriaController.updateCategoria.bind(categoriaController)));
+adminRouter.delete('/categorias/:id', asyncHandler(categoriaController.deleteCategoria.bind(categoriaController)));
+
 
 /**
  * end of router

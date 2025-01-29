@@ -77,8 +77,13 @@ export class UsuarioAdminService {
 
     async delete(id: number): Promise<boolean> {
         try {
-            const result = await this.usuarioAdminRepository.delete(id);
-            return result.affected !== 0;
+            const admin = await this.usuarioAdminRepository.findOne({
+                where: { usuario_admin_id: id }
+            });
+            if (!admin) return false;
+
+            await this.usuarioAdminRepository.delete(id);
+            return true;
         } catch (error) {
             console.error(`Error deleting administrador with ID ${id}:`, error);
             throw error;
