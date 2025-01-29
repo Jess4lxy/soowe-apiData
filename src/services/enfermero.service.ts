@@ -1,7 +1,7 @@
 import Enfermero from '../models/enfermero.model';
+import { AppDataSource } from '../config/data-source';
 import { IEnfermero } from '../models/enfermero.model';
 import { uploadProfile } from '../utils/cloudinaryUpload';
-import { getManager } from 'typeorm';
 import { EnfermeroSQL } from '../models/enfermeroSQL.model';
 import { OrganizacionSQL } from '../models/organizacionSQL.model';
 
@@ -26,7 +26,7 @@ class EnfermeroService {
 
     private async saveEnfermeroPostgres(data: IEnfermero): Promise<void> {
         try {
-            const entityManager = getManager();
+            const entityManager = AppDataSource.manager;
 
             // get the related organization from the database
             const organizacion = await entityManager.findOne(OrganizacionSQL, {
@@ -93,7 +93,7 @@ class EnfermeroService {
     // Get all enfermeros from PostgreSQL
     public async getEnfermerosSQL(): Promise<EnfermeroSQL[]> {
         try {
-            const entityManager = getManager();
+            const entityManager = AppDataSource.manager;
             return await entityManager.find(EnfermeroSQL, { relations: ['organizacion'] });
         } catch (error) {
             console.error('Error fetching Enfermeros from PostgreSQL:', error);
@@ -104,7 +104,7 @@ class EnfermeroService {
     // Get a single enfermero by ID from PostgreSQL
     public async getEnfermeroByIdSQL(id: number): Promise<EnfermeroSQL | null> {
         try {
-            const entityManager = getManager();
+            const entityManager = AppDataSource.manager;
             return await entityManager.findOne(EnfermeroSQL, {
                 where: { enfermero_id: id },
                 relations: ['organizacion'],
@@ -127,7 +127,7 @@ class EnfermeroService {
             }
 
             // Update in PostgreSQL
-            const entityManager = getManager();
+            const entityManager = AppDataSource.manager;
             const enfermeroSQL = await entityManager.findOne(EnfermeroSQL, {
                 where: { correo: enfermeroMongo.correo }, // Assuming email is unique
             });
@@ -159,7 +159,7 @@ class EnfermeroService {
             }
 
             // Delete from PostgreSQL
-            const entityManager = getManager();
+            const entityManager = AppDataSource.manager;
             await entityManager.delete(EnfermeroSQL, { correo: enfermeroMongo.correo });
         } catch (error) {
             console.error('Error deleting the Enfermero:', error);

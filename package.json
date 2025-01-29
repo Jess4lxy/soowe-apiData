@@ -23,18 +23,22 @@
   "description": "",
   "dependencies": {
     "cloudinary": "^2.5.1",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mongodb": "^5.9.2",
     "mongoose": "^8.9.5",
+    "morgan": "^1.10.0",
     "pg": "^8.13.1",
     "pg-hstore": "^2.3.4",
     "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/mongoose": "^5.11.96",
+    "@types/morgan": "^1.9.9",
     "@types/node": "^22.10.10",
     "@types/pg": "^8.11.11",
     "@typescript-eslint/eslint-plugin": "^8.21.0",

@@ -42,5 +42,5 @@ const enfermeroSchema: Schema<IEnfermero> = new Schema({
     foto_perfil: { type: String, default: null } // this will save the url of the image
 });
 
-const Enfermero = mongoose.model<IEnfermero>('Enfermero', enfermeroSchema);
+const Enfermero = mongoose.model<IEnfermero>('Enfermeros', enfermeroSchema, 'Enfermeros');
 export default Enfermero;
