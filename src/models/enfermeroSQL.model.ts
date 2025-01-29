@@ -23,7 +23,7 @@ export class EnfermeroSQL {
 
   @ManyToOne(() => OrganizacionSQL, (organizacion) => organizacion.enfermeros)
   @JoinColumn({ name: 'organizacion_id' })
-  organizacion: OrganizacionSQL = new OrganizacionSQL();
+  organizacion?: OrganizacionSQL;
 
   @Column({ type: 'boolean', default: true })
   disponibilidad: boolean = true;

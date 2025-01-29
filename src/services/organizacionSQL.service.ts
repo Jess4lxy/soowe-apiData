@@ -10,29 +10,67 @@ export class OrganizacionService {
     }
 
     async getAll(): Promise<OrganizacionSQL[]> {
-        return await this.organizacionRepository.find({ relations: ['enfermeros', 'usuarios_admin', 'solicitudes'] });
+        try {
+            return await this.organizacionRepository
+                .createQueryBuilder('organizacion')
+                .leftJoinAndSelect('organizacion.enfermeros', 'enfermero')
+                .leftJoinAndSelect('organizacion.usuarios_admin', 'usuario')
+                .leftJoinAndSelect('organizacion.solicitudes', 'solicitud')
+                .getMany();
+        } catch (error) {
+            console.error('Error fetching all organizaciones:', error);
+            throw error;
+        }
     }
 
     async getById(id: number): Promise<OrganizacionSQL | null> {
-        return await this.organizacionRepository.findOne({ where: { organizacion_id: id }, relations: ['enfermeros', 'usuarios_admin', 'solicitudes'] });
+        try {
+            return await this.organizacionRepository
+                .createQueryBuilder('organizacion')
+                .leftJoinAndSelect('organizacion.enfermeros', 'enfermero')
+                .leftJoinAndSelect('organizacion.usuarios_admin', 'usuario')
+                .leftJoinAndSelect('organizacion.solicitudes', 'solicitud')
+                .where('organizacion.organizacion_id = :id', { id })
+                .getOne(); // No es necesario el select
+        } catch (error) {
+            console.error(`Error fetching organizacion with ID ${id}:`, error);
+            throw error;
+        }
     }
 
     async create(data: Partial<OrganizacionSQL>): Promise<OrganizacionSQL> {
-        const organizacion = this.organizacionRepository.create(data);
-        return await this.organizacionRepository.save(organizacion);
+        try {
+            const organizacion = this.organizacionRepository.create(data);
+            return await this.organizacionRepository.save(organizacion);
+        } catch (error) {
+            console.error('Error creating organizacion:', error);
+            throw error;
+        }
     }
 
     async update(id: number, data: Partial<OrganizacionSQL>): Promise<OrganizacionSQL | null> {
-        const organizacion = await this.organizacionRepository.findOne({ where: { organizacion_id: id } });
-        if (!organizacion) return null;
+        try {
+            const organizacion = await this.organizacionRepository.findOne({
+                where: { organizacion_id: id }
+            });
 
-        Object.assign(organizacion, data);
-        organizacion.fecha_modificacion = new Date();
-        return await this.organizacionRepository.save(organizacion);
+            if (!organizacion) return null;
+
+            Object.assign(organizacion, data);
+            return await this.organizacionRepository.save(organizacion);
+        } catch (error) {
+            console.error(`Error updating organizacion with ID ${id}:`, error);
+            throw error;
+        }
     }
 
     async delete(id: number): Promise<boolean> {
-        const result = await this.organizacionRepository.delete(id);
-        return result.affected !== 0;
+        try {
+            const result = await this.organizacionRepository.delete(id);
+            return result.affected !== 0;
+        } catch (error) {
+            console.error(`Error deleting organizacion with ID ${id}:`, error);
+            throw error;
+        }
     }
 }

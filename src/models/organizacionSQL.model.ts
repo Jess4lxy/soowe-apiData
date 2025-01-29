@@ -20,18 +20,18 @@ export class OrganizacionSQL {
     @Column({ type: 'varchar', length: 20})
     cuenta_bancaria: string = ' ';
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    fecha_creacion: Date = new Date();
+    @Column({ type: 'timestamp', nullable: true })
+    fecha_creacion?: Date;
 
     @Column({ type: 'timestamp', nullable: true })
     fecha_modificacion?: Date;
 
-    @OneToMany(() => EnfermeroSQL, enfermero => enfermero.organizacion)
+    @OneToMany(() => EnfermeroSQL, (enfermero) => enfermero.organizacion)
     enfermeros?: EnfermeroSQL[];
 
-    @OneToMany(() => UsuarioSQL, usuario => usuario.organizacion)
+    @OneToMany(() => UsuarioSQL, (usuario) => usuario.organizacion)
     usuarios_admin?: UsuarioSQL[];
 
-    @OneToMany(() => SolicitudSQL, solicitudes => solicitudes.organizacion)
+    @OneToMany(() => SolicitudSQL, (solicitudes) => solicitudes.organizacion)
     solicitudes?: SolicitudSQL[];
 }
