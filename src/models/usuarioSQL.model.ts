@@ -14,5 +14,5 @@ export class UsuarioSQL {
 
     @ManyToOne(() => OrganizacionSQL, organizacion => organizacion.usuarios_admin)
     @JoinColumn({ name: 'organizacion_id' })
-    organizacion: OrganizacionSQL = new OrganizacionSQL();
+    organizacion?: OrganizacionSQL;
 }

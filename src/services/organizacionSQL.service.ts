@@ -31,7 +31,7 @@ export class OrganizacionService {
                 .leftJoinAndSelect('organizacion.usuarios_admin', 'usuario')
                 .leftJoinAndSelect('organizacion.solicitudes', 'solicitud')
                 .where('organizacion.organizacion_id = :id', { id })
-                .getOne(); // No es necesario el select
+                .getOne();
         } catch (error) {
             console.error(`Error fetching organizacion with ID ${id}:`, error);
             throw error;
