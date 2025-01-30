@@ -15,13 +15,16 @@ export class SolicitudSQL {
     organizacion?: OrganizacionSQL;
 
     @Column({ type: 'varchar', length: 50 })
-    estado: string = '';
+    estado: string = ' ';
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    fecha_solicitud: Date = new Date();
+    @Column({ type: 'timestamp', nullable: true })
+    fecha_solicitud?: Date;
 
     @Column({ type: 'timestamp', nullable: true })
     fecha_respuesta?: Date;
+
+    @Column({ type: 'text', nullable: true })
+    comentarios?: string;
 
     @OneToMany(() => ServicioSolicitudSQL, (servicioSolicitud) => servicioSolicitud.solicitud)
     servicioSolicitudes?: ServicioSolicitudSQL[];

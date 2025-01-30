@@ -3,7 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import adminRouter from './routes/admin.routes';
-import movilRouter from './routes/movil.routes';
+import movilRouter from './routes/mobile.routes';
 
 dotenv.config();
 

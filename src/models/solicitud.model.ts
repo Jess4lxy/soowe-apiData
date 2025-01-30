@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-interface ISolicitud extends Document {
+export interface ISolicitud extends Document {
     usuario_id: number;
     paciente_id: number;
     organizacion_id: number;
@@ -10,6 +10,7 @@ interface ISolicitud extends Document {
     fecha_solicitud: Date;
     fecha_servicio: Date;
     solicitud_id: number;
+    comentarios?: string;
 }
 
 const solicitudSchema: Schema<ISolicitud> = new Schema({
@@ -22,6 +23,7 @@ const solicitudSchema: Schema<ISolicitud> = new Schema({
     fecha_solicitud: { type: Date, required: true },
     fecha_servicio: { type: Date, required: false },
     solicitud_id: { type: Number, required: true, unique: true },
+    comentarios: { type: String, default: '' },
 });
 
 const Solicitud = mongoose.model<ISolicitud>('Solicitud', solicitudSchema);

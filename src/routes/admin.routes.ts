@@ -8,6 +8,9 @@ import AdministradorController from '../controllers/administrador.controller';
 import { validateAdministrador, validateAdministradorRules } from '../middlewares/validateAdministrador';
 import categoriaController from '../controllers/categoria.controller';
 import { validateCategoria, validateCategoriaRules } from '../middlewares/validateCategoria';
+import serviciosController from '../controllers/servicios.controller';
+import { validateServicio, validateServicioRules } from '../middlewares/validateServicio';
+import solicitudController from '../controllers/solicitud.controller';
 
 const adminRouter = Router();
 
@@ -43,6 +46,16 @@ adminRouter.post('/categorias', [...validateCategoriaRules, validateCategoria], 
 adminRouter.put('/categorias/:id', [...validateCategoriaRules, validateCategoria], asyncHandler(categoriaController.updateCategoria.bind(categoriaController)));
 adminRouter.delete('/categorias/:id', asyncHandler(categoriaController.deleteCategoria.bind(categoriaController)));
 
+// servicios routes
+adminRouter.get('/servicios', asyncHandler(serviciosController.getAllServicios.bind(serviciosController)));
+adminRouter.get('/servicios/:id', asyncHandler(serviciosController.getByIdServicios.bind(serviciosController)));
+adminRouter.post('/servicios', [...validateServicioRules, validateServicio], asyncHandler(serviciosController.createServicios.bind(serviciosController)));
+adminRouter.put('/servicios/:id', [...validateServicioRules, validateServicio], asyncHandler(serviciosController.updateServicios.bind(serviciosController)));
+adminRouter.delete('/servicios/:id', asyncHandler(serviciosController.deleteServicios.bind(serviciosController)));
+
+// solicitudes routes
+adminRouter.get('/solicitudes', asyncHandler(solicitudController.getSolicitudesSQL.bind(solicitudController)));
+adminRouter.get('/solicitudes/:id', asyncHandler(solicitudController.getSolicitudByIdSQL.bind(solicitudController)));
 
 /**
  * end of router

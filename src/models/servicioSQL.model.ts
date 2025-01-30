@@ -10,8 +10,8 @@ export class ServicioSQL {
     @Column({ type: 'varchar', length: 255 })
     nombre: string = ' ';
 
-    @Column({ type: 'varchar', length: 255 })
-    precio_estimado: string = ' ';
+    @Column({ type: 'decimal', precision: 10, scale: 2 })
+    precio_estimado: number = 0;
 
     @Column({ type: 'varchar', length: 255 })
     descripcion: string = ' ';
