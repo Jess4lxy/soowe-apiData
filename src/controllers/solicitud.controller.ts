@@ -31,11 +31,7 @@ export class SolicitudController {
 
     async updateSolicitud(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const solicitudId = parseInt(req.params.id, 10);
-            if (isNaN(solicitudId)) {
-                res.status(400).json({ message: "Invalid ID format" });
-                return;
-            }
+            const solicitudId = req.params.id
 
             await solicitudService.updateSolicitud(solicitudId, req.body);
             res.json({ message: "Solicitud updated successfully" });

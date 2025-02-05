@@ -20,6 +20,7 @@ export const validateSolicitudRules = [
         .isISO8601()
         .withMessage('La fecha de solicitud debe ser una fecha válida'),
     body('solicitud_id')
+        .optional()
         .isInt()
         .withMessage('El solicitud_id debe ser un número entero'),
     body('comentarios')

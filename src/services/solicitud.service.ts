@@ -81,7 +81,7 @@ class SolicitudService {
         }
     }
 
-    public async updateSolicitud(id: number, data: Partial<ISolicitud>): Promise<void> {
+    public async updateSolicitud(id: string, data: Partial<ISolicitud>): Promise<void> {
         try {
             const solicitudMongo = await Solicitud.findByIdAndUpdate(id, data, { new: true });
 
@@ -91,7 +91,7 @@ class SolicitudService {
 
             const entityManager = AppDataSource.manager;
             const solicitudSQL = await entityManager.findOne(SolicitudSQL, {
-                where: { solicitud_id: id },
+                where: { solicitud_id: solicitudMongo.solicitud_id },
             });
 
             if (solicitudSQL) {
