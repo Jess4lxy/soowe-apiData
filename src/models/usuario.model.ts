@@ -20,6 +20,6 @@ const usuarioSchema: Schema<IUsuario> = new Schema({
     usuario_id: { type: Number, required: true, unique: true },
 });
 
-const Usuario = mongoose.model<IUsuario>('Usuario', usuarioSchema);
+const Usuario = mongoose.model<IUsuario>('Usuario', usuarioSchema, 'Usuario');
 
 export default Usuario;
