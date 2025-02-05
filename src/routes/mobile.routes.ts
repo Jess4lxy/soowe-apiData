@@ -5,7 +5,8 @@ import solicitudController from '../controllers/solicitud.controller';
 import { validateSolicitud, validateSolicitudRules } from '../middlewares/validateSolicitud';
 import UserController from '../controllers/usuario.controller';
 import { validateUsuario, validateUsuarioRules } from '../middlewares/validateUsuario';
-
+import pacientesController from '../controllers/pacientes.controller';
+import { validatePaciente, validatePacienteRules } from '../middlewares/validatePaciente';
 
 const mobileRouter = Router();
 
@@ -30,6 +31,13 @@ mobileRouter.get('/usuarios/:id', asyncHandler(UserController.getUserById.bind(U
 mobileRouter.post('/usuarios', [...validateUsuarioRules, validateUsuario], asyncHandler(UserController.createUser.bind(UserController)));
 mobileRouter.put('/usuarios/:id', [...validateUsuarioRules, validateUsuario], asyncHandler(UserController.updateUser.bind(UserController)));
 mobileRouter.delete('/usuarios/:id', asyncHandler(UserController.deleteUser.bind(UserController)));
+
+// Mobile App Routes for Pacientes
+mobileRouter.get('/pacientes', asyncHandler(pacientesController.getPacientes.bind(pacientesController)));
+mobileRouter.get('/pacientes/:id', asyncHandler(pacientesController.getPacienteById.bind(pacientesController)));
+mobileRouter.post('/pacientes', [...validatePacienteRules, validatePaciente], asyncHandler(pacientesController.createPaciente.bind(pacientesController)));
+mobileRouter.put('/pacientes/:id', [...validatePacienteRules, validatePaciente], asyncHandler(pacientesController.updatePaciente.bind(pacientesController)));
+mobileRouter.delete('/pacientes/:id', asyncHandler(pacientesController.deletePaciente.bind(pacientesController)));
 
 /**
  * end of router

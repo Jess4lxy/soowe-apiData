@@ -2,8 +2,7 @@ import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
-import adminRouter from './routes/admin.routes';
-import movilRouter from './routes/mobile.routes';
+import apiRouter from './routes';
 
 dotenv.config();
 
@@ -16,8 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 // API Routes
-app.use('/api/admin', adminRouter);
-app.use('/api/movil', movilRouter);
+app.use('/api', apiRouter);
 
 // Error Handler Middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
