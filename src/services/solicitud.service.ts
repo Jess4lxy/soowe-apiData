@@ -1,3 +1,4 @@
+import { Repository } from "typeorm";
 import { AppDataSource } from '../config/data-source';
 import { SolicitudSQL } from '../models/solicitudSQL.model';
 import Solicitud from '../models/solicitud.model';
@@ -5,6 +6,14 @@ import { ISolicitud } from '../models/solicitud.model';
 import { OrganizacionSQL } from '../models/organizacionSQL.model';
 
 class SolicitudService {
+    private solicitudRepository: Repository<SolicitudSQL>;
+    private organizacionRepository: Repository<OrganizacionSQL>;
+
+    constructor() {
+        this.solicitudRepository = AppDataSource.getRepository(SolicitudSQL);
+        this.organizacionRepository = AppDataSource.getRepository(OrganizacionSQL);
+    }
+
     private async createSolicitudMongo(data: ISolicitud): Promise<ISolicitud> {
         try {
             const nuevaSolicitud = new Solicitud(data);
@@ -17,29 +26,7 @@ class SolicitudService {
     }
 
     private async saveSolicitudPostgres(data: ISolicitud): Promise<void> {
-        try {
-            const entityManager = AppDataSource.manager;
-
-            const organizacion = await entityManager.findOne(OrganizacionSQL, {
-                where: { organizacion_id: data.organizacion_id },
-            });
-
-            if (!organizacion) {
-                throw new Error('Organizacion not found');
-            }
-
-            const nuevaSolicitudSQL = new SolicitudSQL();
-            nuevaSolicitudSQL.usuario_id = data.usuario_id;
-            nuevaSolicitudSQL.organizacion = organizacion;
-            nuevaSolicitudSQL.estado = data.estado;
-            nuevaSolicitudSQL.fecha_solicitud;
-            nuevaSolicitudSQL.comentarios = data.comentarios || '';
-
-            await entityManager.save(nuevaSolicitudSQL);
-        } catch (error) {
-            console.error('Error saving the solicitud in PostgreSQL', error);
-            throw error;
-        }
+            
     }
 
     public async createSolicitud(data: ISolicitud): Promise<void> {

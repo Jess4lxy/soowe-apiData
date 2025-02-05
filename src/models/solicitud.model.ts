@@ -26,5 +26,5 @@ const solicitudSchema: Schema<ISolicitud> = new Schema({
     comentarios: { type: String, default: '' },
 });
 
-const Solicitud = mongoose.model<ISolicitud>('Solicitud', solicitudSchema);
+const Solicitud = mongoose.model<ISolicitud>('Solicitudes', solicitudSchema);
 export default Solicitud;
