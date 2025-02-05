@@ -1,18 +1,9 @@
-import { Repository } from "typeorm";
 import { AppDataSource } from '../config/data-source';
 import { SolicitudSQL } from '../models/solicitudSQL.model';
 import Solicitud from '../models/solicitud.model';
 import { ISolicitud } from '../models/solicitud.model';
-import { OrganizacionSQL } from '../models/organizacionSQL.model';
 
 class SolicitudService {
-    private solicitudRepository: Repository<SolicitudSQL>;
-    private organizacionRepository: Repository<OrganizacionSQL>;
-
-    constructor() {
-        this.solicitudRepository = AppDataSource.getRepository(SolicitudSQL);
-        this.organizacionRepository = AppDataSource.getRepository(OrganizacionSQL);
-    }
 
     private async createSolicitudMongo(data: ISolicitud): Promise<ISolicitud> {
         try {
@@ -26,7 +17,16 @@ class SolicitudService {
     }
 
     private async saveSolicitudPostgres(data: ISolicitud): Promise<void> {
-            
+        try {
+            const solicitudRepository = AppDataSource.getRepository(SolicitudSQL);
+            const nuevaSolicitud = solicitudRepository.create(data);
+
+            await solicitudRepository.save(nuevaSolicitud)
+            return;
+        } catch (error) {
+            console.error("Error saving solicitud to PostgreSQL:", error);
+            throw error;
+        }
     }
 
     public async createSolicitud(data: ISolicitud): Promise<void> {

@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import Enfermero from '../models/enfermero.model';
 import { AppDataSource } from '../config/data-source';
 import { IEnfermero } from '../models/enfermero.model';
@@ -6,38 +7,18 @@ import { EnfermeroSQL } from '../models/enfermeroSQL.model';
 import { OrganizacionSQL } from '../models/organizacionSQL.model';
 
 class EnfermeroService {
-    private async createEnfermeroMongo(data: IEnfermero): Promise<IEnfermero> {
-        try {
-            // it will upload the profile picture IF theres one
-            if (data.foto_perfil) {
-                const url = await uploadProfile(data.foto_perfil);  // `data.foto_perfil` is the local route
-                data.foto_perfil = url; // save the public URL of the image
-            }
-
-            // Create the enfermero in mongoDB
-            const newEnfermero = new Enfermero(data);
-            await newEnfermero.save();
-            return newEnfermero;
-        } catch (error) {
-            console.error('Error creating the Enfermero in mongo', error);
-            throw error;
-        }
-    }
-
-    private async saveEnfermeroPostgres(data: IEnfermero): Promise<void> {
+    private async saveEnfermeroPostgres(data: IEnfermero): Promise<EnfermeroSQL> {
         try {
             const entityManager = AppDataSource.manager;
 
-            // get the related organization from the database
             const organizacion = await entityManager.findOne(OrganizacionSQL, {
-                where: { organizacion_id: data.organizacion_id }, // search the organization by its id
+                where: { organizacion_id: data.organizacion_id },
             });
 
             if (!organizacion) {
                 throw new Error('Organizacion not found');
             }
 
-            // Create the new Enfermero in SQL
             const nuevoEnfermeroSQL = new EnfermeroSQL();
             nuevoEnfermeroSQL.nombre = data.nombre;
             nuevoEnfermeroSQL.apellido = data.apellido;
@@ -48,10 +29,34 @@ class EnfermeroService {
             nuevoEnfermeroSQL.disponibilidad = data.disponibilidad;
             nuevoEnfermeroSQL.fecha_creacion = new Date();
 
-            // save the new enfermero in the database (SQL)
             await entityManager.save(nuevoEnfermeroSQL);
+
+            return nuevoEnfermeroSQL;
         } catch (error) {
-            console.error('Error saving the Enfermero in PostgreSQL:', error);
+            console.error('Error saving Enfermero in PostgreSQL', error);
+            throw error;
+        }
+    }
+
+    private async createEnfermeroMongo(data: IEnfermero, enfermeroSQL: EnfermeroSQL): Promise<IEnfermero> {
+        try {
+            const salt = await bcrypt.genSalt(10);
+            data.contrasena = await bcrypt.hash(data.contrasena, salt);
+
+            // upload profile picture if it exists
+            if (data.foto_perfil) {
+                const url = await uploadProfile(data.foto_perfil);
+                data.foto_perfil = url;
+            }
+
+            data.enfermero_id = enfermeroSQL.enfermero_id;
+
+            // Crear el enfermero en MongoDB
+            const newEnfermero = new Enfermero(data);
+            await newEnfermero.save();
+            return newEnfermero;
+        } catch (error) {
+            console.error('Error creating Enfermero in Mongo', error);
             throw error;
         }
     }
@@ -59,11 +64,11 @@ class EnfermeroService {
     // Create the Enfermero in both databases
     public async CreateEnfermero(data: IEnfermero): Promise<void> {
         try {
-            // MongoDB
-            const enfermeroMongo = await this.createEnfermeroMongo(data);
+            // 1. Primero, guarda el enfermero en PostgreSQL
+            const enfermeroSQL = await this.saveEnfermeroPostgres(data);
 
-            // PostgreSQL
-            await this.saveEnfermeroPostgres(enfermeroMongo);
+            // 2. Luego, usa el ID de PostgreSQL para crear el enfermero en MongoDB
+            await this.createEnfermeroMongo(data, enfermeroSQL);
         } catch (error) {
             console.error('Error saving the Enfermero:', error);
             throw error;
