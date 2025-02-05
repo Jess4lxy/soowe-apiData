@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import adminRouter from './admin.routes';
-import movilRouter from './mobile.routes';
+import mobileRouter from './mobile.routes';
 
 const router = Router();
 
@@ -9,6 +9,6 @@ const router = Router();
  */
 
 router.use('/api/admin', adminRouter);
-router.use('/api/mobile', movilRouter);
+router.use('/api/mobile', mobileRouter);
 
 export default router;
