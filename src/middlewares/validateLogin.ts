@@ -2,10 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
 
 export const validateLoginRules = [
-    body('email')
+    body('correo')
        .isEmail()
        .withMessage('El correo electrónico es obligatorio y debe ser una dirección válida'),
-    body('password')
+    body('contrasena')
        .notEmpty()
        .withMessage('La contraseña es obligatoria'),
 ];

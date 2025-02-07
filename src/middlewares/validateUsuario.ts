@@ -18,6 +18,8 @@ export const validateUsuarioRules = [
         .notEmpty()
         .withMessage('La dirección es requerida'),
     body('usuario_id')
+        .optional()
+        .notEmpty()
         .isInt()
         .withMessage('El usuario_id debe ser un número entero'),
 ];

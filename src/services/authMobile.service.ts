@@ -1,5 +1,5 @@
 import bcryptjs from 'bcryptjs';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { CustomJwtPayload } from '../utils/customJwtPayload';
 import Usuario from '../models/usuario.model';
 import { IUsuario } from '../models/usuario.model';
@@ -13,6 +13,8 @@ class AuthMobileService {
         try {
             const validateUser: IUsuario | null = await Usuario.findOne({ correo });
             const validateEnfermero: IEnfermero | null = await Enfermero.findOne({ correo });
+
+            console.log('Logging in from service:', correo, contrasena);
 
             let user: IUsuario | IEnfermero | null;
             let role: 'usuario' | 'enfermero';

@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 // Auth & public routes
-app.use('/auth', authRouter);
+app.use('/', authRouter);
 
 // API Routes
 app.use('/api', authMiddleware, apiRouter);

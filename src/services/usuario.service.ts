@@ -1,5 +1,6 @@
 import Usuario from "../models/usuario.model";
 import { IUsuario } from "../models/usuario.model";
+import bcryptjs from 'bcryptjs';
 
 class UsuarioService {
     public async getUsers(): Promise<IUsuario[]> {
@@ -22,7 +23,19 @@ class UsuarioService {
 
     async createUser(data: IUsuario): Promise<void> {
         try {
-            await Usuario.create(data);
+            const { nombre, apellido, correo, contrasena, telefono, direccion } = data;
+
+            const hashedPassword = await bcryptjs.hash(contrasena, 14);
+            const newUser = new Usuario({
+                nombre,
+                apellido,
+                correo,
+                contrasena: hashedPassword,
+                telefono,
+                direccion
+            });
+
+            await Usuario.create(newUser);
         } catch (error){
             console.error('Error saving the user:', error);
             throw error;
