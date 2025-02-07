@@ -4,6 +4,7 @@ export interface IUsuario extends Document {
     nombre: string;
     apellido: string;
     correo: string;
+    contrasena: string;
     telefono: string;
     direccion: string;
     pacientes: mongoose.Types.ObjectId[];
@@ -14,6 +15,7 @@ const usuarioSchema: Schema<IUsuario> = new Schema({
     nombre: { type: String, required: true },
     apellido: { type: String, required: true },
     correo: { type: String, required: true, unique: true },
+    contrasena: { type: String, required: true },
     telefono: { type: String, required: true },
     direccion: { type: String, required: true },
     pacientes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Paciente' }],
