@@ -3,12 +3,12 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface ISolicitud extends Document {
     usuario_id: number;
     paciente_id: number;
-    organizacion_id: number;
-    enfermero_id: number;
+    organizacion_id?: number;
+    enfermero_id?: number;
     estado: string;
     metodo_pago: string;
     fecha_solicitud: Date;
-    fecha_servicio: Date;
+    fecha_servicio?: Date;
     solicitud_id: number;
     comentarios?: string;
 }
