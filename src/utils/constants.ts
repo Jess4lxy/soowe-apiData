@@ -3,7 +3,8 @@
 export const CLOUDINARY_FOLDERS = {
     USER_PROFILES: 'users/profiles',
     NURSE_PROFILES: 'nurses/profiles',
-    DOCUMENTS: 'users/documents',
+    USER_DOCUMENTS: 'users/documents',
+    NURSE_DOCUMENTS: 'nurses/documents',
     GENERAL_UPLOADS: 'uploads/general'
 };
 

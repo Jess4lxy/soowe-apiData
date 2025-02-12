@@ -62,10 +62,11 @@ class UsuarioService {
         }
     }
 
-    async uploadProfilePicture(id: string, picture: string): Promise<IUsuario | null> {
+    async uploadProfilePicture(userId: string, picture: string): Promise<IUsuario | null> {
         try {
             const imageUrl = await uploadProfile(picture, CLOUDINARY_FOLDERS.USER_PROFILES);
-            const updatedUser = await Usuario.findByIdAndUpdate(id, { foto_perfil: imageUrl }, { new: true});
+            console.log(imageUrl);
+            const updatedUser = await Usuario.findByIdAndUpdate(userId, { foto_perfil: imageUrl });
 
             return updatedUser;
         } catch (error){
