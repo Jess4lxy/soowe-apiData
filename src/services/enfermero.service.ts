@@ -47,7 +47,7 @@ class EnfermeroService {
             // upload profile picture if it exists
             if (data.foto_perfil) {
                 const url = await uploadProfile(data.foto_perfil, CLOUDINARY_FOLDERS.NURSE_PROFILES);
-                data.foto_perfil = url;
+                data.foto_perfil = Buffer.from(url.secure_url);
             }
 
             data.enfermero_id = enfermeroSQL.enfermero_id;

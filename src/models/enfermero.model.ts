@@ -18,7 +18,7 @@ export interface IEnfermero extends Document {
     resenas: IResena[];
     contrasena: string;
     enfermero_id: number;
-    foto_perfil?: string;
+    foto_perfil?: Buffer;
 }
 
 const resenaSchema: Schema<IResena> = new Schema({
@@ -39,7 +39,7 @@ const enfermeroSchema: Schema<IEnfermero> = new Schema({
     resenas: [resenaSchema],
     contrasena: { type: String, required: true },
     enfermero_id: { type: Number, required: true, unique: true },
-    foto_perfil: { type: String, default: null } // this will save the url of the image
+    foto_perfil: { type: Buffer, default: null } // this will save the url of the image
 });
 
 const Enfermero = mongoose.model<IEnfermero>('Enfermeros', enfermeroSchema, 'Enfermeros');

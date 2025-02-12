@@ -1,7 +1,7 @@
 import Usuario from "../models/usuario.model";
 import { IUsuario } from "../models/usuario.model";
 import bcryptjs from 'bcryptjs';
-import { uploadProfile } from "../utils/cloudinaryUpload";
+import { uploadProfile, deleteProfile } from "../utils/cloudinaryUpload";
 import { CLOUDINARY_FOLDERS } from "../utils/constants";
 
 class UsuarioService {
@@ -62,12 +62,28 @@ class UsuarioService {
         }
     }
 
-    async uploadProfilePicture(userId: string, picture: string): Promise<IUsuario | null> {
+    async uploadProfilePicture(userId: string, picture: Buffer): Promise<IUsuario | null> {
         try {
-            const imageUrl = await uploadProfile(picture, CLOUDINARY_FOLDERS.USER_PROFILES);
-            console.log(imageUrl);
-            const updatedUser = await Usuario.findByIdAndUpdate(userId, { foto_perfil: imageUrl });
+            const user = await Usuario.findById(userId);
+            if (!user) {
+                throw new Error('User not found');
+            }
 
+            if (user.foto_perfil?.public_id) {
+                await deleteProfile(user.foto_perfil.public_id);
+            }
+
+            const result = await uploadProfile(picture, CLOUDINARY_FOLDERS.USER_PROFILES);
+            const updatedUser = await Usuario.findByIdAndUpdate(
+                userId,
+                {
+                    foto_perfil: {
+                    url: result.secure_url,
+                    public_id: result.public_id
+                    }
+                },
+                { new: true }
+            );
             return updatedUser;
         } catch (error){
             console.error('Error updating the user profile picture:', error);

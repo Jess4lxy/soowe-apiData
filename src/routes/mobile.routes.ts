@@ -32,7 +32,7 @@ mobileRouter.get('/usuarios/:id', asyncHandler(UserController.getUserById.bind(U
 mobileRouter.post('/usuarios', [...validateUsuarioRules, validateUsuario], asyncHandler(UserController.createUser.bind(UserController)));
 mobileRouter.put('/usuarios/:id', [...validateUsuarioRules, validateUsuario], asyncHandler(UserController.updateUser.bind(UserController)));
 mobileRouter.delete('/usuarios/:id', asyncHandler(UserController.deleteUser.bind(UserController)));
-mobileRouter.put('/usuarios/:id', upload.single('foto_perfil'), asyncHandler(UserController.uploadProfilePicture.bind(UserController)));
+mobileRouter.put('/usuarios/:id/profile/upload-picture', upload.single('foto_perfil'), asyncHandler(UserController.uploadProfilePicture.bind(UserController)));
 
 // Mobile App Routes for Pacientes
 mobileRouter.get('/pacientes', asyncHandler(pacientesController.getPacientes.bind(pacientesController)));

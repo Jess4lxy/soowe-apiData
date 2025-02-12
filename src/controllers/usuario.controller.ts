@@ -57,8 +57,13 @@ export class UserController {
                 return;
             }
 
+            if (!['image/jpeg', 'image/png'].includes(req.file.mimetype)) {
+                res.status(400).json({ message: "Unsupported file format" });
+                return;
+            }
+
             const userId = req.params.id;
-            const picture = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+            const picture = req.file.buffer;
 
             const userUpdated = await UsuarioService.uploadProfilePicture(userId, picture);
 
@@ -67,7 +72,7 @@ export class UserController {
                 return;
             }
 
-            res.json({ message: "Profile picture uploaded successfully" });
+            res.json({ message: "Profile picture uploaded successfully", foto_perfil: userUpdated.foto_perfil });
         } catch (error) {
             res.status(500).json({ message: "Error uploading profile picture", error });
         }

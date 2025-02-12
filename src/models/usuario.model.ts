@@ -7,7 +7,10 @@ export interface IUsuario extends Document {
     contrasena: string;
     telefono: string;
     direccion: string;
-    foto_perfil: string;
+    foto_perfil?: {
+        url: string;
+        public_id: string;
+    }
     pacientes: mongoose.Types.ObjectId[];
 }
 
@@ -18,7 +21,10 @@ const usuarioSchema: Schema<IUsuario> = new Schema({
     contrasena: { type: String, required: true },
     telefono: { type: String, required: true },
     direccion: { type: String, required: true },
-    foto_perfil: { type: String, required: false },
+    foto_perfil: {
+        url: { type: String, required: false },
+        public_id: { type: String, required: false }
+    },
     pacientes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Paciente' }],
 });
 
