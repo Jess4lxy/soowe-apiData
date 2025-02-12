@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import UsuarioService from "../services/usuario.service";
+import Usuario from "../models/usuario.model";
 
 export class UserController {
     async getUsers(req: Request, res: Response, next: NextFunction) {
@@ -46,6 +47,29 @@ export class UserController {
             res.json({ message: "User deleted successfully" });
         } catch (error) {
             res.status(500).json({ message: "Error deleting user", error });
+        }
+    }
+
+    async uploadProfilePicture(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            if (!req.file) {
+                res.status(400).json({ message: "No file uploaded" });
+                return;
+            }
+
+            const userId = req.params.id;
+            const picture = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+
+            const userUpdated = await UsuarioService.uploadProfilePicture(userId, picture);
+
+            if (!userUpdated){
+                res.status(404).json({ message: "Usuario no encontrado" });
+                return;
+            }
+
+            res.json({ message: "Profile picture uploaded successfully" });
+        } catch (error) {
+            res.status(500).json({ message: "Error uploading profile picture", error });
         }
     }
 }

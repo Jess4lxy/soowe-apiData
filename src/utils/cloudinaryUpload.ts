@@ -1,9 +1,9 @@
 import cloudinary from "../config/cloudinaryConfig";
 
-export const uploadProfile = async (rutaLocal: string): Promise<string> => {
+export const uploadProfile = async (localRoute: string, cloudRoute: string): Promise<string> => {
     try {
-        const resultado = await cloudinary.uploader.upload(rutaLocal, {
-            folder: 'soowie/perfiles', // folder
+        const resultado = await cloudinary.uploader.upload(localRoute, {
+            folder: cloudRoute, // folder
             allowed_formats: ['jpg', 'jpeg', 'png'],
             transformation: [{ width: 200, height: 200, crop: 'fill' }]
         });

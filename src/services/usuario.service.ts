@@ -1,6 +1,7 @@
 import Usuario from "../models/usuario.model";
 import { IUsuario } from "../models/usuario.model";
 import bcryptjs from 'bcryptjs';
+import { uploadProfile } from "../utils/cloudinaryUpload";
 
 class UsuarioService {
     public async getUsers(): Promise<IUsuario[]> {
@@ -56,6 +57,18 @@ class UsuarioService {
             await Usuario.findByIdAndDelete(id);
         } catch (error){
             console.error('Error deleting the user:', error);
+            throw error;
+        }
+    }
+
+    async uploadProfilePicture(id: string, picture: string): Promise<IUsuario | null> {
+        try {
+            const imageUrl = await uploadProfile(picture, 'usuarios/perfiles');
+            const updatedUser = await Usuario.findByIdAndUpdate(id, { foto_perfil: imageUrl }, { new: true});
+
+            return updatedUser;
+        } catch (error){
+            console.error('Error updating the user profile picture:', error);
             throw error;
         }
     }
