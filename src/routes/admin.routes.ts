@@ -11,6 +11,7 @@ import { validateCategoria, validateCategoriaRules } from '../middlewares/valida
 import serviciosController from '../controllers/servicios.controller';
 import { validateServicio, validateServicioRules } from '../middlewares/validateServicio';
 import solicitudController from '../controllers/solicitud.controller';
+import upload from '../middlewares/uploadMiddleware';
 
 const adminRouter = Router();
 
@@ -19,7 +20,7 @@ const adminRouter = Router();
  */
 
 // enfermeros routes
-adminRouter.post('/enfermeros', [...validateEnfermeroRules, validateEnfermero], asyncHandler(EnfermeroController.createEnfermero.bind(EnfermeroController)));
+adminRouter.post('/enfermeros', upload.single('foto_perfil'), [...validateEnfermeroRules, validateEnfermero], asyncHandler(EnfermeroController.createEnfermero.bind(EnfermeroController)));
 adminRouter.get('/enfermeros', asyncHandler(EnfermeroController.getEnfermerosSQL.bind(EnfermeroController)));
 adminRouter.get('/enfermeros/:id', asyncHandler(EnfermeroController.getEnfermeroByIdSQL.bind(EnfermeroController)));
 adminRouter.put('/enfermeros/:id', [...validateEnfermeroRules, validateEnfermero], asyncHandler(EnfermeroController.updateEnfermero.bind(EnfermeroController)));

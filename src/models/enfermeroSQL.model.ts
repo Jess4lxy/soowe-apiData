@@ -33,4 +33,7 @@ export class EnfermeroSQL {
 
   @Column({ type: 'timestamp', nullable: true })
   fecha_modificacion?: Date;
+
+  @Column({ type: 'varchar', nullable: true })
+  foto_perfil?: string;
 }

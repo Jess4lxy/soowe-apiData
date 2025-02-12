@@ -2,6 +2,7 @@ import Usuario from "../models/usuario.model";
 import { IUsuario } from "../models/usuario.model";
 import bcryptjs from 'bcryptjs';
 import { uploadProfile } from "../utils/cloudinaryUpload";
+import { CLOUDINARY_FOLDERS } from "../utils/constants";
 
 class UsuarioService {
     public async getUsers(): Promise<IUsuario[]> {
@@ -63,7 +64,7 @@ class UsuarioService {
 
     async uploadProfilePicture(id: string, picture: string): Promise<IUsuario | null> {
         try {
-            const imageUrl = await uploadProfile(picture, 'usuarios/perfiles');
+            const imageUrl = await uploadProfile(picture, CLOUDINARY_FOLDERS.USER_PROFILES);
             const updatedUser = await Usuario.findByIdAndUpdate(id, { foto_perfil: imageUrl }, { new: true});
 
             return updatedUser;

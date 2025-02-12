@@ -5,6 +5,7 @@ import { IEnfermero } from '../models/enfermero.model';
 import { uploadProfile } from '../utils/cloudinaryUpload';
 import { EnfermeroSQL } from '../models/enfermeroSQL.model';
 import { OrganizacionSQL } from '../models/organizacionSQL.model';
+import { CLOUDINARY_FOLDERS } from '../utils/constants';
 
 class EnfermeroService {
     private async saveEnfermeroPostgres(data: IEnfermero): Promise<EnfermeroSQL> {
@@ -45,7 +46,7 @@ class EnfermeroService {
 
             // upload profile picture if it exists
             if (data.foto_perfil) {
-                const url = await uploadProfile(data.foto_perfil);
+                const url = await uploadProfile(data.foto_perfil, CLOUDINARY_FOLDERS.NURSE_PROFILES);
                 data.foto_perfil = url;
             }
 
