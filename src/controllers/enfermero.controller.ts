@@ -4,7 +4,13 @@ import EnfermeroService from '../services/enfermero.service';
 class EnfermeroController {
     public async createEnfermero(req: Request, res: Response): Promise<void> {
         try {
-            await EnfermeroService.CreateEnfermero(req.body);
+            const enfermeroData = req.body;
+
+            if (req.file) {
+                enfermeroData.foto_perfil = req.file.buffer;
+            }
+
+            await EnfermeroService.CreateEnfermero(enfermeroData);
             res.status(201).json({ message: 'Enfermero created successfully' });
         } catch (error) {
             res.status(500).json({ error: 'Error creating the Enfermero' });

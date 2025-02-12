@@ -29,6 +29,7 @@ class EnfermeroService {
             nuevoEnfermeroSQL.organizacion = organizacion;
             nuevoEnfermeroSQL.disponibilidad = data.disponibilidad;
             nuevoEnfermeroSQL.fecha_creacion = new Date();
+            nuevoEnfermeroSQL.foto_perfil = data.foto_perfil?.url || undefined;
 
             await entityManager.save(nuevoEnfermeroSQL);
 
@@ -44,15 +45,9 @@ class EnfermeroService {
             const salt = await bcrypt.genSalt(10);
             data.contrasena = await bcrypt.hash(data.contrasena, salt);
 
-            // upload profile picture if it exists
-            if (data.foto_perfil) {
-                const url = await uploadProfile(data.foto_perfil, CLOUDINARY_FOLDERS.NURSE_PROFILES);
-                data.foto_perfil = Buffer.from(url.secure_url);
-            }
-
             data.enfermero_id = enfermeroSQL.enfermero_id;
 
-            // Crear el enfermero en MongoDB
+            // create enfermero in mongoDB
             const newEnfermero = new Enfermero(data);
             await newEnfermero.save();
             return newEnfermero;
@@ -65,10 +60,16 @@ class EnfermeroService {
     // Create the Enfermero in both databases
     public async CreateEnfermero(data: IEnfermero): Promise<void> {
         try {
-            // 1. Primero, guarda el enfermero en PostgreSQL
+            if (data.foto_perfil && Buffer.isBuffer(data.foto_perfil)) {
+                const uploadResult = await uploadProfile(data.foto_perfil, CLOUDINARY_FOLDERS.NURSE_PROFILES);
+                data.foto_perfil = {
+                    url: uploadResult.secure_url,
+                    public_id: uploadResult.public_id,
+                };
+            }
+
             const enfermeroSQL = await this.saveEnfermeroPostgres(data);
 
-            // 2. Luego, usa el ID de PostgreSQL para crear el enfermero en MongoDB
             await this.createEnfermeroMongo(data, enfermeroSQL);
         } catch (error) {
             console.error('Error saving the Enfermero:', error);
