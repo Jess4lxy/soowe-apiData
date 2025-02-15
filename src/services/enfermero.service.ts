@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs';
+import bcryptjs from 'bcryptjs';
 import Enfermero from '../models/enfermero.model';
 import { AppDataSource } from '../config/data-source';
 import { IEnfermero } from '../models/enfermero.model';
@@ -42,8 +42,7 @@ class EnfermeroService {
 
     private async createEnfermeroMongo(data: IEnfermero, enfermeroSQL: EnfermeroSQL): Promise<IEnfermero> {
         try {
-            const salt = await bcrypt.genSalt(10);
-            data.contrasena = await bcrypt.hash(data.contrasena, salt);
+            data.contrasena = await bcryptjs.hash(data.contrasena, 14);
 
             data.enfermero_id = enfermeroSQL.enfermero_id;
 

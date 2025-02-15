@@ -2,6 +2,7 @@ import { Repository } from "typeorm";
 import { AppDataSource } from "../config/data-source";
 import { UsuarioSQL } from "../models/usuarioSQL.model";
 import { OrganizacionSQL } from "../models/organizacionSQL.model";
+import bcryptjs from 'bcryptjs';
 
 export class UsuarioAdminService {
     private usuarioAdminRepository: Repository<UsuarioSQL>;
@@ -39,16 +40,22 @@ export class UsuarioAdminService {
 
     async create(data: Partial<UsuarioSQL>, organizacion_id: number): Promise<UsuarioSQL> {
         try {
+            const { correo, contrasena } = data;
+            if (!contrasena) {
+                throw new Error('The password is required');
+            }
+            const hashedPassword = await bcryptjs.hash(contrasena, 14);
+
             const organizacion = await this.organizacionRepository.findOne({
                 where: { organizacion_id }
             });
-
             if (!organizacion) {
-                throw new Error('Organización no encontrada');
+                throw new Error('Organization not found');
             }
 
             const admin = this.usuarioAdminRepository.create({
-                ...data,
+                correo,
+                contrasena: hashedPassword,
                 organizacion,
             });
 
