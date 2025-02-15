@@ -18,7 +18,7 @@ authRouter.post('/loginMobile', [...validateLoginRules, validateLogin], asyncHan
 
 // admin login route
 
-authRouter.post('/loginAdmin', [...validateLoginRules, validateLogin], asyncHandler(authAdminController.loginAdmin.bind(authAdminController)));
+authRouter.post('/login', [...validateLoginRules, validateLogin], asyncHandler(authAdminController.loginAdmin.bind(authAdminController)));
 
 /**
  * end of router
