@@ -14,8 +14,6 @@ class AuthMobileService {
             const validateUser: IUsuario | null = await Usuario.findOne({ correo });
             const validateEnfermero: IEnfermero | null = await Enfermero.findOne({ correo });
 
-            console.log('Logging in from service:', correo, contrasena);
-
             let user: IUsuario | IEnfermero | null;
             let role: 'usuario' | 'enfermero';
             if (validateUser) {
