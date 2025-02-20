@@ -1,12 +1,13 @@
 import { Schema, model, Document } from 'mongoose';
 
-interface INotificacion extends Document {
+export interface INotificacion extends Document {
   receptorId: string;
   tipoReceptor: 'usuario' | 'enfermero';
   titulo: string;
   contenido: string;
   fechaCreacion: Date;
   leida: boolean;
+  estadoAsignacion?: 'pendiente' | 'aceptada' | 'rechazada';
 }
 
 const NotificacionSchema = new Schema<INotificacion>({
@@ -16,6 +17,7 @@ const NotificacionSchema = new Schema<INotificacion>({
   contenido: { type: String, required: true },
   fechaCreacion: { type: Date, default: Date.now },
   leida: { type: Boolean, default: false },
+  estadoAsignacion: { type: String, enum: ['pendiente', 'aceptada', 'rechazada'], default: 'pendiente' },
 });
 
 export const Notificacion = model<INotificacion>('Notificaciones', NotificacionSchema, 'Notificaciones');
