@@ -2,7 +2,7 @@ import { AppDataSource } from '../config/data-source';
 import { SolicitudSQL } from '../models/solicitudSQL.model';
 import Solicitud from '../models/solicitud.model';
 import { ISolicitud } from '../models/solicitud.model';
-import { createNotification } from './notificaciones.service';
+import notificationService from './notificaciones.service';
 import { Notificacion } from '../models/notificaciones.model';
 import { INotificacion } from '../models/notificaciones.model';
 
@@ -110,7 +110,7 @@ class SolicitudService {
 
                 // only if the status changed, we will notify the user.
                 if (data.estado && data.estado !== estadoAnterior && usuarioId) {
-                    await createNotification(
+                    await notificationService.createNotification(
                         usuarioId,
                         'usuario',
                         'Estado de solicitud actualizado',
@@ -148,7 +148,7 @@ class SolicitudService {
                 throw new Error('Solicitud no encontrada');
             }
 
-            await createNotification(
+            await notificationService.createNotification(
                 enfermeroId,
                 'enfermero',
                 'Asignación de solicitud pendiente',
@@ -189,7 +189,7 @@ class SolicitudService {
             if (answer === 'aceptada') {
 
                 // Notificar al usuario que el enfermero aceptó
-                await createNotification(
+                await notificationService.createNotification(
                     solicitud.usuario_id.toString(),
                     'usuario',
                     'Enfermero asignado',
@@ -197,7 +197,7 @@ class SolicitudService {
                     'aceptada'
                 );
             } else {
-                await createNotification(
+                await notificationService.createNotification(
                     solicitud.usuario_id.toString(),
                     'usuario',
                     'Enfermero rechazado',
