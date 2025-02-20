@@ -2,6 +2,7 @@ import { AppDataSource } from '../config/data-source';
 import { SolicitudSQL } from '../models/solicitudSQL.model';
 import Solicitud from '../models/solicitud.model';
 import { ISolicitud } from '../models/solicitud.model';
+import { createNotification } from './notificaciones.service';
 
 class SolicitudService {
 
@@ -94,10 +95,26 @@ class SolicitudService {
                 where: { solicitud_id: solicitudMongo.solicitud_id },
             });
 
+            let usuarioId: string | undefined;
+
             if (solicitudSQL) {
+                usuarioId = solicitudSQL.usuario_id?.toString();
+
+                const estadoAnterior = solicitudSQL.estado;
                 solicitudSQL.estado = data.estado ?? solicitudSQL.estado;
                 solicitudSQL.comentarios = data.comentarios ?? solicitudSQL.comentarios;
+
                 await entityManager.save(solicitudSQL);
+
+                // only if the status changed, we will notify the user.
+                if (data.estado && data.estado !== estadoAnterior && usuarioId) {
+                    await createNotification(
+                        usuarioId,
+                        'usuario',
+                        'Estado de solicitud actualizado',
+                        `El estado de tu solicitud con ID ${id} ha cambiado a "${data.estado}".`
+                    );
+                }
             }
         } catch (error) {
             console.error('Error updating the solicitud:', error);

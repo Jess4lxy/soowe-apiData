@@ -1,8 +1,8 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ISolicitud extends Document {
-    usuario_id: number;
-    paciente_id: number;
+    usuario_id: string;
+    paciente_id: string;
     organizacion_id?: number;
     enfermero_id?: number;
     estado: string;
@@ -14,8 +14,8 @@ export interface ISolicitud extends Document {
 }
 
 const solicitudSchema: Schema<ISolicitud> = new Schema({
-    usuario_id: { type: Number, required: true },
-    paciente_id: { type: Number, required: true },
+    usuario_id: { type: String, required: true },
+    paciente_id: { type: String, required: true },
     organizacion_id: { type: Number, required: false },
     enfermero_id: { type: Number, required: false },
     estado: { type: String, required: true },

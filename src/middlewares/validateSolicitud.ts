@@ -3,11 +3,11 @@ import { body, validationResult } from 'express-validator';
 
 export const validateSolicitudRules = [
     body('usuario_id')
-        .isInt()
-        .withMessage('El usuario_id debe ser un número entero'),
+        .isString()
+        .withMessage('El id debe ser valido'),
     body('paciente_id')
-        .isInt()
-        .withMessage('El paciente_id debe ser un número entero'),
+        .isString()
+        .withMessage('El id debe ser valido'),
     body('estado')
         .isString()
         .notEmpty()
