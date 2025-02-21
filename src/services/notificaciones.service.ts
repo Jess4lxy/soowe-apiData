@@ -1,4 +1,6 @@
 import { Notificacion, INotificacion} from '../models/notificaciones.model';
+import { ISolicitud } from '../models/solicitud.model';
+import Solicitud from '../models/solicitud.model';
 
 class notificationService {
   async createNotification(
@@ -41,6 +43,76 @@ class notificationService {
       return null;
     }
   }
+
+  public async assignEnfermeroToSolicitud(solicitudId: string, enfermeroId: string): Promise<void> {
+    try {
+        const solicitud = await Solicitud.findById(solicitudId);
+        if (!solicitud) {
+            throw new Error('Solicitud no encontrada');
+        }
+
+        await this.createNotification(
+            enfermeroId,
+            'enfermero',
+            'Asignación de solicitud pendiente',
+            `Has sido asignado a la solicitud con ID ${solicitudId}. ¿Aceptarás o rechazarás la asignación?`,
+            'pendiente'
+        );
+    } catch (error) {
+        console.error('Error asignando enfermero:', error);
+        throw error;
+    }
+}
+
+public async answerAssignation(enfermeroId: number, notificacionId: string, solicitudId: string, answer: "aceptada" | "rechazada"): Promise<void> {
+    try {
+        const solicitud = await Solicitud.findById(solicitudId);
+        if (!solicitud) {
+            throw new Error('Solicitud no encontrada');
+        }
+
+        const notification = await Notificacion.findOne({
+            where: {
+                id: notificacionId,
+                receptorId: enfermeroId,
+                tipoReceptor: 'enfermero',
+                estadoAsignacion: 'pendiente'
+            }
+        });
+
+        if (!notification) {
+            throw new Error('Notificación no encontrada');
+        }
+
+        notification.estadoAsignacion = answer;
+        notification.leida = true;
+        await notification.save();
+
+        // if nurse answer, send notification to user
+        if (answer === 'aceptada') {
+
+            // Notificar al usuario que el enfermero aceptó
+            await this.createNotification(
+                solicitud.usuario_id.toString(),
+                'usuario',
+                'Enfermero asignado',
+                `El enfermero ${enfermeroId} ha aceptado tu solicitud ${solicitudId}.`,
+                'aceptada'
+            );
+        } else {
+            await this.createNotification(
+                solicitud.usuario_id.toString(),
+                'usuario',
+                'Enfermero rechazado',
+                `El enfermero ${enfermeroId} ha rechazado tu solicitud ${solicitudId}.`,
+               'rechazada'
+            );
+        }
+    } catch (error) {
+        console.error('Error respondiendo asignación:', error);
+        throw error;
+    }
+}
 }
 
 export default new notificationService();

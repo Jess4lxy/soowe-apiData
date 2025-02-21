@@ -60,7 +60,7 @@ export class SolicitudController {
     }
 
 
-    async getSolicitudesSQL(req: Request, res: Response, next: NextFunction) {
+    async getSolicitudesSQL(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const solicitudes = await solicitudService.getSolicitudesSQL();
             res.json(solicitudes);
@@ -69,7 +69,7 @@ export class SolicitudController {
         }
     }
 
-    async getSolicitudByIdSQL(req: Request, res: Response, next: NextFunction) {
+    async getSolicitudByIdSQL(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const solicitud = await solicitudService.getSolicitudByIdSQL(Number(req.params.id));
             res.json(solicitud);
