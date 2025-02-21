@@ -8,6 +8,7 @@ import { validateUsuario, validateUsuarioRules } from '../middlewares/validateUs
 import pacientesController from '../controllers/pacientes.controller';
 import { validatePaciente, validatePacienteRules } from '../middlewares/validatePaciente';
 import upload from '../middlewares/uploadMiddleware';
+import notificacionController from '../controllers/notificacion.controller';
 
 const mobileRouter = Router();
 
@@ -41,6 +42,9 @@ mobileRouter.post('/pacientes', [...validatePacienteRules, validatePaciente], as
 mobileRouter.put('/pacientes/:id', [...validatePacienteRules, validatePaciente], asyncHandler(pacientesController.updatePaciente.bind(pacientesController)));
 mobileRouter.delete('/pacientes/:id', asyncHandler(pacientesController.deletePaciente.bind(pacientesController)));
 
+// Mobile App Routes for Notificaciones
+mobileRouter.get('/notificaciones/:id', asyncHandler(notificacionController.getNotificationById.bind(notificacionController)));
+mobileRouter.get('/notificaciones/:receptorId', asyncHandler(notificacionController.getNotificationsByReceptor.bind(notificacionController)));
 /**
  * end of router
  */

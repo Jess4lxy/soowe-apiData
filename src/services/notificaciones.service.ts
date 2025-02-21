@@ -22,13 +22,23 @@ class notificationService {
     }
   }
 
-  async getNotificationsByUser(receptorId: string): Promise<INotificacion[]> {
+  async getNotificationsByReceptor(receptorId: string): Promise<INotificacion[]> {
     try {
       const notifications = await Notificacion.find({ receptorId });
       return notifications;
     } catch (error) {
       console.error('Error al obtener notificaciones:', error);
       return [];
+    }
+  }
+
+  async getNotificationById(id: string): Promise<INotificacion | null> {
+    try {
+      const notification = await Notificacion.findById(id);
+      return notification;
+    } catch (error) {
+      console.error('Error al obtener notificación:', error);
+      return null;
     }
   }
 }
