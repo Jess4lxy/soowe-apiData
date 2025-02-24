@@ -40,7 +40,7 @@ export class AuthAdminService {
             }
 
             const token = jwt.sign(
-                { id: administrador.usuario_admin_id, correo, role: 'admin' } as CustomJwtPayload,
+                { id: administrador.usuario_admin_id, correo, role: 'admin', organizacion_id: administrador.organizacion } as CustomJwtPayload,
                 SECRET_KEY,
                 { expiresIn: '7d' }
             )
