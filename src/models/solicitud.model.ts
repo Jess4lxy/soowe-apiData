@@ -11,6 +11,7 @@ export interface ISolicitud extends Document {
     fecha_servicio?: Date;
     solicitud_id: number;
     comentarios?: string;
+    servicios: number[];
 }
 
 const solicitudSchema: Schema<ISolicitud> = new Schema({
@@ -24,6 +25,7 @@ const solicitudSchema: Schema<ISolicitud> = new Schema({
     fecha_servicio: { type: Date, required: false },
     solicitud_id: { type: Number, required: true, unique: true },
     comentarios: { type: String, default: '' },
+    servicios: [{ type: Number, required: true }]
 });
 
 const Solicitud = mongoose.model<ISolicitud>('Solicitudes', solicitudSchema, 'Solicitudes');

@@ -5,6 +5,8 @@ import { ISolicitud } from '../models/solicitud.model';
 import notificationService from './notificaciones.service';
 import { Notificacion } from '../models/notificaciones.model';
 import { INotificacion } from '../models/notificaciones.model';
+import { ServicioSolicitudSQL } from '../models/servicio_solicitud.model';
+import { ServicioSQL } from '../models/servicioSQL.model';
 
 class SolicitudService {
 
@@ -20,17 +22,36 @@ class SolicitudService {
     }
 
     private async saveSolicitudPostgres(data: ISolicitud): Promise<void> {
-        try {
-            const solicitudRepository = AppDataSource.getRepository(SolicitudSQL);
-            const nuevaSolicitud = solicitudRepository.create(data);
+    try {
+        const solicitudRepository = AppDataSource.getRepository(SolicitudSQL);
+        const servicioSolicitudRepository = AppDataSource.getRepository(ServicioSolicitudSQL);
 
-            await solicitudRepository.save(nuevaSolicitud)
-            return;
-        } catch (error) {
-            console.error("Error saving solicitud to PostgreSQL:", error);
-            throw error;
+        // Crear la solicitud sin los servicios primero
+        const nuevaSolicitud = solicitudRepository.create({
+            usuario_id: data.usuario_id,
+            estado: data.estado,
+            fecha_solicitud: data.fecha_solicitud,
+            fecha_respuesta: data.fecha_servicio,
+            comentarios: data.comentarios,
+            organizacion: data.organizacion_id ? { organizacion_id: data.organizacion_id } : undefined
+        });
+
+        await solicitudRepository.save(nuevaSolicitud);
+
+        if (data.servicios && data.servicios.length > 0) {
+            const serviciosSolicitud = data.servicios.map(servicioId => servicioSolicitudRepository.create({
+                solicitud: nuevaSolicitud,
+                servicio: { servicio_id: servicioId } as unknown as ServicioSQL
+            }));
+
+            await servicioSolicitudRepository.save(serviciosSolicitud);
         }
+
+    } catch (error) {
+        console.error("Error saving solicitud to PostgreSQL:", error);
+        throw error;
     }
+}
 
     public async createSolicitud(data: ISolicitud): Promise<void> {
         try {

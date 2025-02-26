@@ -6,8 +6,7 @@ export interface IPaciente extends Document {
     alergias: string[];
     estado: string;
     cuidados_necesarios: string;
-    usuario_id: number;
-    paciente_id: number;
+    usuario_id: string;
 }
 
 const pacienteSchema: Schema<IPaciente> = new Schema({
@@ -16,8 +15,7 @@ const pacienteSchema: Schema<IPaciente> = new Schema({
     alergias: { type: [String], required: true },
     estado: { type: String, required: true },
     cuidados_necesarios: { type: String, required: false },
-    usuario_id: { type: Number, required: true },
-    paciente_id: { type: Number, required: true, unique: true },
+    usuario_id: { type: String, required: true },
 });
 
 const Paciente = mongoose.model<IPaciente>('Pacientes', pacienteSchema, 'Pacientes');
