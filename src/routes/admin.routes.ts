@@ -42,7 +42,7 @@ adminRouter.delete('/administradores/:id', asyncHandler(AdministradorController.
 
 // categorias routes
 adminRouter.get('/categorias', asyncHandler(categoriaController.getAllCategorias.bind(categoriaController)));
-adminRouter.get('/categorias/:id', asyncHandler(categoriaController.getCategoriaById.bind(categoriaController)));
+adminRouter.get('/categorias/:id/servicios', asyncHandler(categoriaController.getCategoriaById.bind(categoriaController)));
 adminRouter.post('/categorias', [...validateCategoriaRules, validateCategoria], asyncHandler(categoriaController.createCategoria.bind(categoriaController)));
 adminRouter.put('/categorias/:id', [...validateCategoriaRules, validateCategoria], asyncHandler(categoriaController.updateCategoria.bind(categoriaController)));
 adminRouter.delete('/categorias/:id', asyncHandler(categoriaController.deleteCategoria.bind(categoriaController)));
