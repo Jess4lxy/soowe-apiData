@@ -22,11 +22,8 @@ export const validatePacienteRules = [
         .isString()
         .withMessage('Los cuidados necesarios deben ser una cadena si se proporcionan'),
     body('usuario_id')
-        .isInt()
-        .withMessage('El usuario_id debe ser un número entero'),
-    body('paciente_id')
-        .isInt()
-        .withMessage('El paciente_id debe ser un número entero'),
+        .isString()
+        .withMessage('El usuario_id debe ser un string'),
 ];
 
 export const validatePaciente = (req: Request, res: Response, next: NextFunction): void => {
