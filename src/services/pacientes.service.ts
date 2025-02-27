@@ -25,10 +25,10 @@ class PacienteService {
     public async createPaciente(data: IPaciente): Promise<void> {
         try {
             const paciente = new Paciente(data);
-            await paciente.save();
+            const savedPaciente = await paciente.save();
 
             const usuario = data.usuario_id;
-            await Usuario.findByIdAndUpdate(usuario, { $push: { pacientes: paciente._id } });
+            await Usuario.findByIdAndUpdate(usuario, { $push: { pacientes: savedPaciente._id } });
         } catch (error) {
             console.error('Error creating paciente:', error);
             throw error;
