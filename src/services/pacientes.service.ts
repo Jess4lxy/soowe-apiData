@@ -1,5 +1,7 @@
 import Paciente from "../models/paciente.model";
 import { IPaciente } from "../models/paciente.model";
+import Usuario from "../models/usuario.model";
+import { IUsuario } from "../models/usuario.model";
 
 class PacienteService {
     public async getPacientes(): Promise<IPaciente[]> {
@@ -24,6 +26,9 @@ class PacienteService {
         try {
             const paciente = new Paciente(data);
             await paciente.save();
+
+            const usuario = data.usuario_id;
+            await Usuario.findByIdAndUpdate(usuario, { $push: { pacientes: paciente._id } });
         } catch (error) {
             console.error('Error creating paciente:', error);
             throw error;
