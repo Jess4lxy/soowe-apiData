@@ -14,8 +14,9 @@ export const validatePacienteRules = [
         .notEmpty()
         .withMessage('Las alergias no pueden estar vacías'),
     body('estado')
-        .notEmpty()
-        .withMessage('El estado es requerido'),
+        .optional()
+        .isString()
+        .withMessage('El estado debe ser del tipo correcto string'),
     body('cuidados_necesarios')
         .optional()
         .isString()
