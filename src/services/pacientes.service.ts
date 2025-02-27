@@ -21,17 +21,30 @@ class PacienteService {
             throw error;
         }
     }
-
-    public async createPaciente(data: IPaciente): Promise<void> {
+    public async createPaciente(data: IPaciente): Promise<IPaciente> {
         try {
+            // 1. Crear el paciente
             const paciente = new Paciente(data);
             await paciente.save();
-
-            const usuario = data.usuario_id;
-            await Usuario.findByIdAndUpdate(usuario, { $push: { pacientes: paciente._id } });
+    
+            // 2. Verificar que el usuario exista
+            const usuario = await Usuario.findById(data.usuario_id);
+            if (!usuario) {
+                throw new Error('El usuario no existe');
+            }
+    
+            // 3. Actualizar el usuario para agregar el ID del paciente
+            await Usuario.findByIdAndUpdate(
+                data.usuario_id,
+                { $push: { pacientes: paciente._id } },
+                { new: true }
+            );
+    
+            // 4. Retornar el paciente creado
+            return paciente;
         } catch (error) {
             console.error('Error creating paciente:', error);
-            throw error;
+            throw new Error('No se pudo crear el paciente');
         }
     }
 
