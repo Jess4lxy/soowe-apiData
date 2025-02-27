@@ -15,7 +15,7 @@ const pacienteSchema: Schema<IPaciente> = new Schema({
     alergias: { type: [String], required: true },
     estado: { type: String, required: false },
     cuidados_necesarios: { type: String, required: false },
-    usuario_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' },
+    usuario_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuarios' },
 });
 
 const Paciente = mongoose.model<IPaciente>('Pacientes', pacienteSchema, 'Pacientes');

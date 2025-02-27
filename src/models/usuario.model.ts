@@ -25,7 +25,7 @@ const usuarioSchema: Schema<IUsuario> = new Schema({
         url: { type: String, required: false },
         public_id: { type: String, required: false }
     },
-    pacientes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Paciente' }],
+    pacientes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Pacientes' }],
 });
 
 const Usuario = mongoose.model<IUsuario>('Usuarios', usuarioSchema, 'Usuarios');
