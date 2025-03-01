@@ -3,6 +3,8 @@ import { IUsuario } from "../models/usuario.model";
 import bcryptjs from 'bcryptjs';
 import { uploadProfile, deleteProfile } from "../utils/cloudinaryUpload";
 import { CLOUDINARY_FOLDERS } from "../utils/constants";
+import Paciente from "../models/paciente.model";
+import { IPaciente } from "../models/paciente.model";
 
 class UsuarioService {
     public async getUsers(): Promise<IUsuario[]> {
@@ -87,6 +89,15 @@ class UsuarioService {
             return updatedUser;
         } catch (error){
             console.error('Error updating the user profile picture:', error);
+            throw error;
+        }
+    }
+
+    async getUserPacientes(userId: string): Promise<IPaciente[] | null> {
+        try {
+            return await Paciente.find({ usuario_id: userId });
+        } catch (error){
+            console.error('Error fetching user patients:', error);
             throw error;
         }
     }

@@ -31,6 +31,7 @@ mobileRouter.delete('/solicitudes/:id', asyncHandler(solicitudController.deleteS
 // Mobile App Routes for Usuarios
 mobileRouter.get('/usuarios', asyncHandler(UserController.getUsers.bind(UserController)));
 mobileRouter.get('/usuarios/:id', asyncHandler(UserController.getUserById.bind(UserController)));
+mobileRouter.get('/usuarios/:id/pacientes', asyncHandler(UserController.getUserPacientes.bind(UserController)));
 mobileRouter.post('/usuarios', [...validateUsuarioRules, validateUsuario], asyncHandler(UserController.createUser.bind(UserController)));
 mobileRouter.put('/usuarios/:id', [...validateUsuarioRules, validateUsuario], asyncHandler(UserController.updateUser.bind(UserController)));
 mobileRouter.delete('/usuarios/:id', asyncHandler(UserController.deleteUser.bind(UserController)));

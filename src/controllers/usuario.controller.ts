@@ -77,6 +77,16 @@ export class UserController {
             res.status(500).json({ message: "Error uploading profile picture", error });
         }
     }
+
+    async getUserPacientes(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const userId = req.params.id;
+            const pacientes = await UsuarioService.getUserPacientes(userId);
+            res.json(pacientes);
+        } catch (error) {
+            res.status(500).json({ message: "Error fetching pacientes", error });
+        }
+    }
 }
 
 export default new UserController();
