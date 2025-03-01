@@ -6,6 +6,8 @@ import { uploadProfile } from '../utils/cloudinaryUpload';
 import { EnfermeroSQL } from '../models/enfermeroSQL.model';
 import { OrganizacionSQL } from '../models/organizacionSQL.model';
 import { CLOUDINARY_FOLDERS } from '../utils/constants';
+import Solicitud from '../models/solicitud.model';
+import { ISolicitud } from '../models/solicitud.model';
 
 class EnfermeroService {
     private async saveEnfermeroPostgres(data: IEnfermero): Promise<EnfermeroSQL> {
@@ -169,6 +171,16 @@ class EnfermeroService {
             await entityManager.delete(EnfermeroSQL, { correo: enfermeroMongo.correo });
         } catch (error) {
             console.error('Error deleting the Enfermero:', error);
+            throw error;
+        }
+    }
+
+    // Get solicitudes related with the Enfermero in mongo (for mobile use)
+    public async getSolicitudesEnfermeroMongo(id: string): Promise<ISolicitud[]> {
+        try {
+            return await Solicitud.find({ enfermero_id: id });
+        } catch (error) {
+            console.error('Error getting the solicitudes in MongoDB:', error);
             throw error;
         }
     }

@@ -78,6 +78,15 @@ class EnfermeroController {
             res.status(500).json({ error: 'Error deleting the enfermero' });
         }
     }
+
+    public async getSolicitudesEnfermeroMongo(req: Request, res: Response): Promise<void> {
+        try {
+            const solicitudes = await EnfermeroService.getSolicitudesEnfermeroMongo(req.params.id);
+            res.status(200).json(solicitudes);
+        } catch (error) {
+            res.status(500).json({ error: 'Error getting the solicitudes of the enfermero from MongoDB' });
+        }
+    }
 }
 
 export default new EnfermeroController();
