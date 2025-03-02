@@ -87,6 +87,16 @@ export class UserController {
             res.status(500).json({ message: "Error fetching pacientes", error });
         }
     }
+
+    async getUserSolicitudes(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const userId = req.params.id;
+            const solicitudes = await UsuarioService.getUserSolicitudes(userId);
+            res.json(solicitudes);
+        } catch (error) {
+            res.status(500).json({ message: "Error fetching solicitudes", error });
+        }
+    }
 }
 
 export default new UserController();

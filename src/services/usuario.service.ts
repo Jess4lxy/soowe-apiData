@@ -5,6 +5,8 @@ import { uploadProfile, deleteProfile } from "../utils/cloudinaryUpload";
 import { CLOUDINARY_FOLDERS } from "../utils/constants";
 import Paciente from "../models/paciente.model";
 import { IPaciente } from "../models/paciente.model";
+import Solicitud from "../models/solicitud.model";
+import { ISolicitud } from "../models/solicitud.model";
 
 class UsuarioService {
     public async getUsers(): Promise<IUsuario[]> {
@@ -98,6 +100,15 @@ class UsuarioService {
             return await Paciente.find({ usuario_id: userId });
         } catch (error){
             console.error('Error fetching user patients:', error);
+            throw error;
+        }
+    }
+
+    async getUserSolicitudes(userId: string): Promise<ISolicitud[] | null> {
+        try {
+            return await Solicitud.find({ usuario_id: userId });
+        } catch (error){
+            console.error('Error fetching user requests:', error);
             throw error;
         }
     }
