@@ -9,7 +9,7 @@ export interface ISolicitud extends Document {
     metodo_pago: string;
     fecha_solicitud: Date;
     fecha_servicio?: Date;
-    solicitud_id: number;
+    pg_solicitud_id: number;
     comentarios?: string;
     servicios: number[];
 }
@@ -23,7 +23,7 @@ const solicitudSchema: Schema<ISolicitud> = new Schema({
     metodo_pago: { type: String, required: true },
     fecha_solicitud: { type: Date, required: true },
     fecha_servicio: { type: Date, required: false },
-    solicitud_id: { type: Number, required: true, unique: true },
+    pg_solicitud_id: { type: Number, required: true, unique: true },
     comentarios: { type: String, default: '' },
     servicios: [{ type: Number, required: true }]
 });

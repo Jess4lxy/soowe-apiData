@@ -10,9 +10,13 @@ import { ServicioSQL } from '../models/servicioSQL.model';
 
 class SolicitudService {
 
-    private async createSolicitudMongo(data: ISolicitud): Promise<ISolicitud> {
+    private async createSolicitudMongo(data: ISolicitud, pgSolicitudId: number): Promise<ISolicitud> {
         try {
-            const nuevaSolicitud = new Solicitud(data);
+            const nuevaSolicitud = new Solicitud({
+                ...data,
+                pg_solicitud_id: pgSolicitudId,
+            });
+
             await nuevaSolicitud.save();
             return nuevaSolicitud;
         } catch (error) {
@@ -21,43 +25,43 @@ class SolicitudService {
         }
     }
 
-    private async saveSolicitudPostgres(data: ISolicitud): Promise<void> {
-    try {
-        const solicitudRepository = AppDataSource.getRepository(SolicitudSQL);
-        const servicioSolicitudRepository = AppDataSource.getRepository(ServicioSolicitudSQL);
+    private async saveSolicitudPostgres(data: ISolicitud): Promise<number> {
+        try {
+            const solicitudRepository = AppDataSource.getRepository(SolicitudSQL);
+            const servicioSolicitudRepository = AppDataSource.getRepository(ServicioSolicitudSQL);
 
-        // Crear la solicitud sin los servicios primero
-        const nuevaSolicitud = solicitudRepository.create({
-            usuario_id: data.usuario_id,
-            estado: data.estado,
-            fecha_solicitud: data.fecha_solicitud,
-            fecha_respuesta: data.fecha_servicio,
-            comentarios: data.comentarios,
-            organizacion: data.organizacion_id ? { organizacion_id: data.organizacion_id } : undefined
-        });
+            const nuevaSolicitud = solicitudRepository.create({
+                usuario_id: data.usuario_id,
+                estado: data.estado,
+                fecha_solicitud: data.fecha_solicitud,
+                fecha_respuesta: data.fecha_servicio,
+                comentarios: data.comentarios,
+                organizacion: data.organizacion_id ? { organizacion_id: data.organizacion_id } : undefined,
+            });
 
-        await solicitudRepository.save(nuevaSolicitud);
+            await solicitudRepository.save(nuevaSolicitud);
 
-        if (data.servicios && data.servicios.length > 0) {
-            const serviciosSolicitud = data.servicios.map(servicioId => servicioSolicitudRepository.create({
-                solicitud: nuevaSolicitud,
-                servicio: { servicio_id: servicioId } as unknown as ServicioSQL
-            }));
+            if (data.servicios && data.servicios.length > 0) {
+                const serviciosSolicitud = data.servicios.map(servicioId => servicioSolicitudRepository.create({
+                    solicitud: nuevaSolicitud,
+                    servicio: { servicio_id: servicioId } as unknown as ServicioSQL,
+                }));
 
-            await servicioSolicitudRepository.save(serviciosSolicitud);
+                await servicioSolicitudRepository.save(serviciosSolicitud);
+            }
+
+            return nuevaSolicitud.solicitud_id;
+        } catch (error) {
+            console.error("Error saving solicitud to PostgreSQL:", error);
+            throw error;
         }
-
-    } catch (error) {
-        console.error("Error saving solicitud to PostgreSQL:", error);
-        throw error;
     }
-}
 
     public async createSolicitud(data: ISolicitud): Promise<void> {
         try {
-            const solicitudMongo = await this.createSolicitudMongo(data);
+            const pgSolicitudId = await this.saveSolicitudPostgres(data);
 
-            await this.saveSolicitudPostgres(solicitudMongo);
+            await this.createSolicitudMongo(data, pgSolicitudId);
         } catch (error) {
             console.error('Error creating the solicitud:', error);
             throw error;
@@ -115,7 +119,7 @@ class SolicitudService {
 
             const entityManager = AppDataSource.manager;
             const solicitudSQL = await entityManager.findOne(SolicitudSQL, {
-                where: { solicitud_id: solicitudMongo.solicitud_id },
+                where: { solicitud_id: solicitudMongo.pg_solicitud_id },
             });
 
             let usuarioId: string | undefined;
