@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { OrganizacionSQL } from './organizacionSQL.model';
 import { ServicioSolicitudSQL } from './servicio_solicitud.model';
+import { PagoSQL } from './pagoSQL.model';
 
 @Entity('solicitudes')
 export class SolicitudSQL {
@@ -28,4 +29,7 @@ export class SolicitudSQL {
 
     @OneToMany(() => ServicioSolicitudSQL, (servicioSolicitud) => servicioSolicitud.solicitud)
     servicioSolicitudes?: ServicioSolicitudSQL[];
+
+    @OneToMany(() => PagoSQL, (pago) => pago.solicitud)
+    pagos?: PagoSQL[];
 }
