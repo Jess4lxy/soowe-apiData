@@ -22,10 +22,16 @@ export class SolicitudSQL {
     fecha_solicitud?: Date;
 
     @Column({ type: 'timestamp', nullable: true })
+    fecha_servicio?: Date;
+
+    @Column({ type: 'timestamp', nullable: true })
     fecha_respuesta?: Date;
 
     @Column({ type: 'text', nullable: true })
     comentarios?: string;
+
+    @Column({ type: 'varchar', length: 500 })
+    ubicacion: string = ' ';
 
     @OneToMany(() => ServicioSolicitudSQL, (servicioSolicitud) => servicioSolicitud.solicitud)
     servicioSolicitudes?: ServicioSolicitudSQL[];
