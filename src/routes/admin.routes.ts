@@ -18,6 +18,7 @@ const adminRouter = Router();
 /**
  * All the routes in this file are for the admin panel.
  */
+// TODO: reassign all the delete routes to use the new soft-delete method
 
 // enfermeros routes
 adminRouter.post('/enfermeros', upload.single('foto_perfil'), [...validateEnfermeroRules, validateEnfermero], asyncHandler(EnfermeroController.createEnfermero.bind(EnfermeroController)));
@@ -57,6 +58,8 @@ adminRouter.delete('/servicios/:id', asyncHandler(serviciosController.deleteServ
 // solicitudes routes
 adminRouter.get('/solicitudes', asyncHandler(solicitudController.getSolicitudesSQL.bind(solicitudController)));
 adminRouter.get('/solicitudes/:id', asyncHandler(solicitudController.getSolicitudByIdSQL.bind(solicitudController)));
+adminRouter.get('/solicitudes/entrantes', asyncHandler(solicitudController.getAllUnassignedSolicitudes.bind(solicitudController)));
+adminRouter.get('/solicitudes/:id/pagos', asyncHandler(solicitudController.getSolicitudPayments.bind(solicitudController)));
 
 /**
  * end of router

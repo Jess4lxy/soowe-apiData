@@ -77,6 +77,24 @@ export class SolicitudController {
             res.status(500).json({ message: "Error fetching solicitud", error });
         }
     }
+
+    async getAllUnassignedSolicitudes(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const unassignedSolicitudes = await solicitudService.getAllUnassignedSolicitudes();
+            res.json(unassignedSolicitudes);
+        } catch (error) {
+            res.status(500).json({ message: "Error fetching unassigned solicitudes", error });
+        }
+    }
+
+    async getSolicitudPayments(req: Request, res: Response, next: NextFunction) {
+        try {
+            const payments = await solicitudService.getSolicitudPayments(parseInt(req.params.solicitudId, 10));
+            res.json(payments);
+        } catch (error) {
+            res.status(500).json({ message: "Error fetching payments by solicitud ID", error });
+        }
+    }
 }
 
 export default new SolicitudController();

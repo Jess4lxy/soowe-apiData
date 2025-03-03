@@ -7,6 +7,8 @@ import { Notificacion } from '../models/notificaciones.model';
 import { INotificacion } from '../models/notificaciones.model';
 import { ServicioSolicitudSQL } from '../models/servicio_solicitud.model';
 import { ServicioSQL } from '../models/servicioSQL.model';
+import { IsNull } from 'typeorm';
+import { PagoSQL } from '../models/pagoSQL.model';
 
 class SolicitudService {
 
@@ -162,6 +164,30 @@ class SolicitudService {
             await entityManager.delete(SolicitudSQL, { solicitud_id: id });
         } catch (error) {
             console.error('Error deleting the solicitud:', error);
+            throw error;
+        }
+    }
+
+    public async getAllUnassignedSolicitudes(): Promise<SolicitudSQL[]> {
+        try {
+            const entityManager = AppDataSource.manager;
+            return await entityManager.find(SolicitudSQL, {
+                where: { organizacion: IsNull() },
+                relations: ['organizacion'],
+            });
+        } catch (error) {
+            console.error('Error getting all unassigned solicitudes:', error);
+            throw error;
+        }
+    }
+
+    public async getSolicitudPayments(solicitudId: number): Promise<PagoSQL[]> {
+        try {
+            const solicitud = new SolicitudSQL();
+            solicitud.solicitud_id = solicitudId;
+            return await AppDataSource.getRepository(PagoSQL).find({ where: { solicitud } });
+        } catch (error) {
+            console.error('Error fetching payments by solicitud ID:', error);
             throw error;
         }
     }
