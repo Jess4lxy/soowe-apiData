@@ -59,11 +59,12 @@ class SolicitudService {
         }
     }
 
-    public async createSolicitud(data: ISolicitud): Promise<void> {
+    public async createSolicitud(data: ISolicitud): Promise<number> {
         try {
             const pgSolicitudId = await this.saveSolicitudPostgres(data);
 
             await this.createSolicitudMongo(data, pgSolicitudId);
+            return pgSolicitudId;
         } catch (error) {
             console.error('Error creating the solicitud:', error);
             throw error;
