@@ -57,8 +57,8 @@ adminRouter.delete('/servicios/:id', asyncHandler(serviciosController.deleteServ
 
 // solicitudes routes
 adminRouter.get('/solicitudes', asyncHandler(solicitudController.getSolicitudes.bind(solicitudController)));
-adminRouter.get('/solicitudes/:id', asyncHandler(solicitudController.getSolicitudById.bind(solicitudController)));
 adminRouter.get('/solicitudes/entrantes', asyncHandler(solicitudController.getAllUnassignedSolicitudes.bind(solicitudController)));
+adminRouter.get('/solicitudes/:id', asyncHandler(solicitudController.getSolicitudById.bind(solicitudController)));
 adminRouter.get('/solicitudes/:id/pagos', asyncHandler(solicitudController.getSolicitudPayments.bind(solicitudController)));
 
 /**
