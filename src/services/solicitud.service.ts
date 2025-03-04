@@ -40,6 +40,7 @@ class SolicitudService {
 
     public async createSolicitud(data: ISolicitud, servicioId: number): Promise<number> {
         try {
+            console.log('Recibido servicioId:', servicioId);
             const nuevaSolicitudSQL = await this.createSolicitudSQL(servicioId);
 
             console.log('nuevaSolicitudSQL:', nuevaSolicitudSQL);
