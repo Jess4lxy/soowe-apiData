@@ -136,19 +136,29 @@ class SolicitudService {
 
     // updating solicitud and deleting solicitudes will be added later, if needed
 
-    public async getUnassignedSolicitudes(): Promise<any[]> {
+    public async getUnassignedSolicitudes(): Promise<SolicitudSQL[]> {
         try {
-            const solicitudesSQL = await AppDataSource.getRepository(SolicitudSQL).find({ relations: ['organizacion', 'servicio'] });
-            const solicitudesMongo = await Solicitud.find();
+            const solicitudesMongo = await Solicitud.find({
+                where: { enfermero_id: null, organizacion_id: null }
+            });
 
-            // Combinar los datos de ambas bases de datos por pg_solicitud_id
-            return solicitudesSQL.map(sql => {
-                const mongo = solicitudesMongo.find(m => m.pg_solicitud_id === sql.solicitud_id);
-                return { ...sql, ...mongo?.toObject() };
+            if (solicitudesMongo.length === 0) {
+                return [];
+            }
+            const solicitudesPg = await AppDataSource.getRepository(SolicitudSQL).find({
+                where: { solicitud_id: In(solicitudesMongo.map(s => s.pg_solicitud_id)) }
+            });
+
+            return solicitudesPg.map(solicitudSQL => {
+                const solicitudMongo = solicitudesMongo.find(s => s.pg_solicitud_id === solicitudSQL.solicitud_id);
+                return {
+                    ...solicitudSQL,
+                    ...(solicitudMongo ? solicitudMongo.toObject() : {}),
+                };
             });
         } catch (error) {
-            console.error('Error getting solicitudes:', error);
-            throw new Error('Error creating Mongo solicitud');
+            console.error('Error getting unassigned solicitudes:', error);
+            throw error;
         }
     }
 
