@@ -29,8 +29,17 @@ class PaymentService {
 
     public async createPayment(data: PagoSQL): Promise<PagoSQL> {
         try {
+            if (data.solicitud && data.solicitud.solicitud_id) {
+                const solicitud = await AppDataSource.getRepository(SolicitudSQL).findOneBy({ solicitud_id: data.solicitud.solicitud_id });
+                if (!solicitud) {
+                    throw new Error('Solicitud not found');
+                }
+                data.solicitud = solicitud;
+            }
+
             const payment = AppDataSource.getRepository(PagoSQL).create(data);
-            return await AppDataSource.getRepository(PagoSQL).save(payment);
+            const savedPayment = await AppDataSource.getRepository(PagoSQL).save(payment);
+            return savedPayment;
         } catch (error) {
             console.error('Error creating payment:', error);
             throw error;
