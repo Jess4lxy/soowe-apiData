@@ -139,7 +139,7 @@ class SolicitudService {
         try {
             const solicitudesMongo = await Solicitud.find({ where: { enfermero_id: null, organizacion_id: null } });
             console.log(solicitudesMongo);
-            const solicitudesPg = await AppDataSource.getRepository(SolicitudSQL).find({ where: { organizacion: IsNull() } });
+            const solicitudesPg = await AppDataSource.getRepository(SolicitudSQL).find({ where: { organizacion_id: IsNull() } });
             console.log(solicitudesPg);
 
             const validSolicitudesPg = solicitudesPg.filter(solicitud => solicitud.solicitud_id !== undefined && !isNaN(solicitud.solicitud_id));

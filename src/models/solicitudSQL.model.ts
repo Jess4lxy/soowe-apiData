@@ -8,8 +8,11 @@ export class SolicitudSQL {
     @PrimaryGeneratedColumn()
     solicitud_id?: number = 0;
 
+    @Column({ name: 'organizacion_id', nullable: true })
+    organizacion_id?: number;
+
     @ManyToOne(() => OrganizacionSQL, (organizacion) => organizacion.solicitudes)
-    @JoinColumn({ name: 'organizacion_id'})
+    @JoinColumn({ name: 'organizacion_id' })
     organizacion?: OrganizacionSQL;
 
     @ManyToOne(() => ServicioSQL, (servicios) => servicios.solicitudes)
