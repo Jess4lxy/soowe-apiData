@@ -7,6 +7,7 @@ import Enfermero from '../models/enfermero.model';
 import { IEnfermero } from '../models/enfermero.model';
 import { OrganizacionSQL } from '../models/organizacionSQL.model';
 import { IsNull } from 'typeorm';
+import { In } from 'typeorm';
 
 class SolicitudService {
     private async createSolicitudSQL(servicioId: number): Promise<SolicitudSQL> {
@@ -138,19 +139,13 @@ class SolicitudService {
     public async getUnassignedSolicitudes(): Promise<SolicitudSQL[]> {
         try {
             const solicitudesMongo = await Solicitud.find({ where: { enfermero_id: null, organizacion_id: null } });
-            console.log(solicitudesMongo);
-            const solicitudesPg = await AppDataSource.getRepository(SolicitudSQL)
-                .createQueryBuilder('solicitud')
-                .leftJoinAndSelect('solicitud.organizacion', 'organizacion')
-                .where('solicitud.organizacion IS NULL')
-                .getMany();
-            console.log(solicitudesPg);
 
-            const validSolicitudesPg = solicitudesPg.filter(solicitud => solicitud.solicitud_id !== undefined && !isNaN(solicitud.solicitud_id));
+            const solicitudesPg = await AppDataSource.getRepository(SolicitudSQL).find({
+                where: { solicitud_id: In(solicitudesMongo.map(s => s.pg_solicitud_id)) }
+            });
 
-            return validSolicitudesPg.map(solicitudSQL => {
+            return solicitudesPg.map(solicitudSQL => {
                 const solicitudMongo = solicitudesMongo.find(s => s.pg_solicitud_id === solicitudSQL.solicitud_id);
-
                 return {
                     ...solicitudSQL,
                     ...(solicitudMongo ? solicitudMongo.toObject() : {}),
