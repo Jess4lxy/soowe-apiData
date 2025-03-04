@@ -18,7 +18,7 @@ export class PaymentController {
             res.json({
                 message: "Payment created successfully",
                 pago_id: payment.pago_id,
-                solicitud_id: payment.solicitud?.solicitud_id,
+                solicitud_id: payment.solicitud.solicitud_id,
             });
         } catch (error) {
             res.status(500).json({ message: "Error creating payment", error });
