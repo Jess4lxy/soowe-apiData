@@ -23,5 +23,5 @@ export class PagoSQL {
 
     @ManyToOne(() => SolicitudSQL, (solicitud) => solicitud.pagos)
     @JoinColumn({ name: 'solicitud_id' })
-    solicitud?: SolicitudSQL;
+    solicitud!: SolicitudSQL;
 }
