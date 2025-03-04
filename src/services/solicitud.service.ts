@@ -139,7 +139,7 @@ class SolicitudService {
     public async getUnassignedSolicitudes(): Promise<any[]> {
         try {
             const solicitudesMongo = await Solicitud.find({
-                where: { estado: "pendiente", enfermero_id: null,}
+                where: { estado: "pendiente"}
             });
 
             if (solicitudesMongo.length === 0) {
