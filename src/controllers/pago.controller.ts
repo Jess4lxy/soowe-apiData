@@ -21,7 +21,12 @@ export class PaymentController {
                 solicitud_id: payment.solicitud.solicitud_id,
             });
         } catch (error) {
-            res.status(500).json({ message: "Error creating payment", error });
+            if (error instanceof Error) {
+                console.error('Error creating payment:', error.stack || error);
+            } else {
+                console.error('Error creating payment:', error);
+            }
+         res.status(500).json({ message: "Error creating payment", error: (error as Error).message });
         }
     }
 

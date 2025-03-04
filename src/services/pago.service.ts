@@ -41,7 +41,11 @@ class PaymentService {
             const savedPayment = await AppDataSource.getRepository(PagoSQL).save(payment);
             return savedPayment;
         } catch (error) {
-            console.error('Error creating payment:', error);
+            if (error instanceof Error) {
+                console.error('Error creating payment:', error.stack || error.message);
+            } else {
+                console.error('Error creating payment:', error);
+            }
             throw error;
         }
     }
