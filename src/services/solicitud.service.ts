@@ -2,193 +2,164 @@ import { AppDataSource } from '../config/data-source';
 import { SolicitudSQL } from '../models/solicitudSQL.model';
 import Solicitud from '../models/solicitud.model';
 import { ISolicitud } from '../models/solicitud.model';
-import notificationService from './notificaciones.service';
-import { Notificacion } from '../models/notificaciones.model';
-import { INotificacion } from '../models/notificaciones.model';
-import { ServicioSolicitudSQL } from '../models/servicio_solicitud.model';
 import { ServicioSQL } from '../models/servicioSQL.model';
+import Enfermero from '../models/enfermero.model';
+import { IEnfermero } from '../models/enfermero.model';
+import { OrganizacionSQL } from '../models/organizacionSQL.model';
 import { IsNull } from 'typeorm';
-import { PagoSQL } from '../models/pagoSQL.model';
 
 class SolicitudService {
+    private async createSolicitudSQL(servicioId: number): Promise<SolicitudSQL> {
+        const solicitudRepository = AppDataSource.getRepository(SolicitudSQL);
+        const servicioRepository = AppDataSource.getRepository(ServicioSQL);
 
-    private async createSolicitudMongo(data: ISolicitud, pgSolicitudId: number): Promise<ISolicitud> {
-        try {
-            const nuevaSolicitud = new Solicitud({
-                ...data,
-                pg_solicitud_id: pgSolicitudId,
-            });
-
-            await nuevaSolicitud.save();
-            return nuevaSolicitud;
-        } catch (error) {
-            console.error('Error creating the solicitud in MongoDB', error);
-            throw error;
+        const servicio = await servicioRepository.findOne({ where: { servicios_id: servicioId } });
+        if (!servicio) {
+            throw new Error('Servicio no encontrado');
         }
+
+        const nuevaSolicitudSQL = solicitudRepository.create({
+            servicio,
+        });
+
+        return await solicitudRepository.save(nuevaSolicitudSQL);
     }
 
-    private async saveSolicitudPostgres(data: ISolicitud): Promise<number> {
+    private async createSolicitudMongo(data: ISolicitud, pg_solicitud_id: number): Promise<void> {
+        const nuevaSolicitudMongo = new Solicitud({
+            ...data,
+            pg_solicitud_id,
+        });
+
+        await nuevaSolicitudMongo.save();
+    }
+
+    public async createSolicitud(data: ISolicitud, servicioId: number): Promise<number> {
         try {
-            const solicitudRepository = AppDataSource.getRepository(SolicitudSQL);
-            const servicioSolicitudRepository = AppDataSource.getRepository(ServicioSolicitudSQL);
+            const nuevaSolicitudSQL = await this.createSolicitudSQL(servicioId);
 
-            const nuevaSolicitud = solicitudRepository.create({
-                usuario_id: data.usuario_id,
-                estado: data.estado,
-                fecha_solicitud: data.fecha_solicitud,
-                fecha_respuesta: data.fecha_servicio,
-                comentarios: data.comentarios,
-                organizacion: data.organizacion_id ? { organizacion_id: data.organizacion_id } : undefined,
-            });
-
-            await solicitudRepository.save(nuevaSolicitud);
-
-            if (data.servicios && data.servicios.length > 0) {
-                const serviciosSolicitud = data.servicios.map(servicioId => servicioSolicitudRepository.create({
-                    solicitud: nuevaSolicitud,
-                    servicio: { servicio_id: servicioId } as unknown as ServicioSQL,
-                }));
-
-                await servicioSolicitudRepository.save(serviciosSolicitud);
+            if (nuevaSolicitudSQL.solicitud_id !== undefined) {
+                await this.createSolicitudMongo(data, nuevaSolicitudSQL.solicitud_id);
+            } else {
+                throw new Error('Failed to create solicitud: solicitud_id is undefined');
             }
 
-            return nuevaSolicitud.solicitud_id;
-        } catch (error) {
-            console.error("Error saving solicitud to PostgreSQL:", error);
-            throw error;
-        }
-    }
-
-    public async createSolicitud(data: ISolicitud): Promise<number> {
-        try {
-            const pgSolicitudId = await this.saveSolicitudPostgres(data);
-
-            await this.createSolicitudMongo(data, pgSolicitudId);
-            return pgSolicitudId;
+            return nuevaSolicitudSQL.solicitud_id;
         } catch (error) {
             console.error('Error creating the solicitud:', error);
             throw error;
         }
     }
 
-    public async getSolicitudesSQL(): Promise<SolicitudSQL[]> {
+    public async getSolicitudes(): Promise<any[]> {
         try {
-            const entityManager = AppDataSource.manager;
-            return await entityManager.find(SolicitudSQL, { relations: ['organizacion'] });
+            const solicitudesSQL = await AppDataSource.getRepository(SolicitudSQL).find({ relations: ['organizacion', 'servicio'] });
+            const solicitudesMongo = await Solicitud.find();
+
+            // Combinar los datos de ambas bases de datos por pg_solicitud_id
+            return solicitudesSQL.map(sql => {
+                const mongo = solicitudesMongo.find(m => m.pg_solicitud_id === sql.solicitud_id);
+                return { ...sql, ...mongo?.toObject() };
+            });
         } catch (error) {
-            console.error('Error getting the solicitudes in PostgreSQL:', error);
-            throw error;
+            console.error('Error getting solicitudes:', error);
+            throw new Error('Error creating Mongo solicitud');
         }
     }
 
-    public async getSolicitudByIdSQL(id: number): Promise<SolicitudSQL | null> {
+    public async getSolicitudById(id: number): Promise<any | null> {
         try {
-            const entityManager = AppDataSource.manager;
-            return await entityManager.findOne(SolicitudSQL, {
+            const solicitudSQL = await AppDataSource.getRepository(SolicitudSQL).findOne({
                 where: { solicitud_id: id },
-                relations: ['organizacion'],
+                relations: ['organizacion', 'servicio']
             });
+
+            if (!solicitudSQL) return null;
+
+            const solicitudMongo = await Solicitud.findOne({ pg_solicitud_id: id });
+            return { ...solicitudSQL, ...solicitudMongo?.toObject() };
         } catch (error) {
-            console.error('Error getting the solicitudes in PostgreSQL:', error);
+            console.error('Error getting solicitud:', error);
             throw error;
         }
     }
 
-    public async getSolicitudesMongo(): Promise<ISolicitud[]> {
+    public async assignEnfermeroToSolicitud(solicitudId: number, enfermeroId: number): Promise<void> {
         try {
-            return await Solicitud.find();
-        } catch (error) {
-            console.error('Error getting the solicitudes in MongoDB:', error);
-            throw error;
-        }
-    }
+            const enfermero = await Enfermero.findOne({
+                enfermero_id: enfermeroId
+            })
+            if (!enfermero) {
+                throw new Error('Enfermero no encontrado');
+            }
 
-    public async getSolicitudByIdMongo(id: string): Promise<ISolicitud | null> {
-        try {
-            return await Solicitud.findById(id);
-        } catch (error) {
-            console.error('Error getting the solicitudes in MongoDB:', error);
-            throw error;
-        }
-    }
-
-    public async updateSolicitud(id: string, data: Partial<ISolicitud>): Promise<void> {
-        try {
-            const solicitudMongo = await Solicitud.findByIdAndUpdate(id, data, { new: true });
-
+            // MongoDB save
+            const solicitudMongo = await Solicitud.findOne({ pg_solicitud_id: solicitudId });
             if (!solicitudMongo) {
-                throw new Error('Solicitud not found in MongoDB');
+                throw new Error('Solicitud no encontrada en MongoDB');
             }
 
-            const entityManager = AppDataSource.manager;
-            const solicitudSQL = await entityManager.findOne(SolicitudSQL, {
-                where: { solicitud_id: solicitudMongo.pg_solicitud_id },
-            });
+            solicitudMongo.enfermero_id = enfermeroId;
+            solicitudMongo.estado = 'asignado';
 
-            let usuarioId: string | undefined;
+            await solicitudMongo.save();
 
-            if (solicitudSQL) {
-                usuarioId = solicitudSQL.usuario_id?.toString();
-
-                const estadoAnterior = solicitudSQL.estado;
-                solicitudSQL.estado = data.estado ?? solicitudSQL.estado;
-                solicitudSQL.comentarios = data.comentarios ?? solicitudSQL.comentarios;
-
-                await entityManager.save(solicitudSQL);
-
-                // only if the status changed, we will notify the user.
-                if (data.estado && data.estado !== estadoAnterior && usuarioId) {
-                    await notificationService.createNotification(
-                        usuarioId,
-                        'usuario',
-                        'Estado de solicitud actualizado',
-                        `El estado de tu solicitud con ID ${id} ha cambiado".`,
-                        data.estado as 'pendiente' | 'aceptada' | 'rechazada'
-                    );
-                }
+            // PostgreSQL save
+            const solicitudRepository = AppDataSource.getRepository(SolicitudSQL);
+            const solicitudPostgres = await solicitudRepository.findOne({ where: { solicitud_id: solicitudId } });
+            if (!solicitudPostgres) {
+                throw new Error('Solicitud no encontrada en PostgreSQL');
             }
+
+            const organizacionRepository = AppDataSource.getRepository(OrganizacionSQL);
+            const organizacion = await organizacionRepository.findOne({ where: { organizacion_id: enfermero.organizacion_id } });
+            if (!organizacion) {
+                throw new Error('Organización no encontrada');
+            }
+
+            solicitudPostgres.organizacion = organizacion;
+            await solicitudRepository.save(solicitudPostgres);
+
+            console.log('Solicitud actualizada correctamente');
         } catch (error) {
-            console.error('Error updating the solicitud:', error);
+            console.error('Error al asignar enfermero y organización:', error);
             throw error;
         }
     }
 
-    public async deleteSolicitud(id: number): Promise<void> {
+    // updating solicitud and deleting solicitudes will be added later, if needed
+
+    public async getUnassignedSolicitudes(): Promise<SolicitudSQL[]> {
         try {
-            const solicitudMongo = await Solicitud.findByIdAndDelete(id);
+            const solicitudesMongo = await Solicitud.find({where: { enfermero_id: null, organizacion_id: null }});
+            const solicitudesPg = await AppDataSource.getRepository(SolicitudSQL).find({ where: { organizacion: IsNull() } });
 
-            if (!solicitudMongo) {
-                throw new Error('Solicitud not found in MongoDB');
-            }
-
-            const entityManager = AppDataSource.manager;
-            await entityManager.delete(SolicitudSQL, { solicitud_id: id });
-        } catch (error) {
-            console.error('Error deleting the solicitud:', error);
-            throw error;
-        }
-    }
-
-    public async getAllUnassignedSolicitudes(): Promise<SolicitudSQL[]> {
-        try {
-            const entityManager = AppDataSource.manager;
-            return await entityManager.find(SolicitudSQL, {
-                where: { organizacion: IsNull() },
-                relations: ['organizacion'],
+            return solicitudesPg.map(solicitudSQL => {
+                const solicitudMongo = solicitudesMongo.find(s => s.pg_solicitud_id === solicitudSQL.solicitud_id);
+                return {
+                    ...solicitudSQL,
+                    ...(solicitudMongo ? solicitudMongo.toObject() : {}),
+                };
             });
         } catch (error) {
-            console.error('Error getting all unassigned solicitudes:', error);
+            console.error('Error getting unassigned solicitudes:', error);
             throw error;
         }
     }
 
-    public async getSolicitudPayments(solicitudId: number): Promise<PagoSQL[]> {
+    public async getSolicitudPayments(solicitudId: number): Promise<any> {
         try {
-            const solicitud = new SolicitudSQL();
-            solicitud.solicitud_id = solicitudId;
-            return await AppDataSource.getRepository(PagoSQL).find({ where: { solicitud } });
+            const solicitudSQL = await AppDataSource.getRepository(SolicitudSQL).findOne({
+                where: { solicitud_id: solicitudId },
+                relations: ['pagos']
+            });
+
+            if (!solicitudSQL) return null;
+
+            const pagos = solicitudSQL.pagos ? solicitudSQL.pagos : [];
+            return { ...solicitudSQL, pagos };
         } catch (error) {
-            console.error('Error fetching payments by solicitud ID:', error);
+            console.error('Error getting solicitud payments:', error);
             throw error;
         }
     }

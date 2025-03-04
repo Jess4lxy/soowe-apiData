@@ -1,40 +1,20 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { OrganizacionSQL } from './organizacionSQL.model';
-import { ServicioSolicitudSQL } from './servicio_solicitud.model';
 import { PagoSQL } from './pagoSQL.model';
+import { ServicioSQL } from './servicioSQL.model';
 
 @Entity('solicitudes')
 export class SolicitudSQL {
     @PrimaryGeneratedColumn()
-    solicitud_id: number = 0;
-
-    @Column({ type: 'varchar', nullable: false })
-    usuario_id: string = ' ';
+    solicitud_id?: number = 0;
 
     @ManyToOne(() => OrganizacionSQL, (organizacion) => organizacion.solicitudes)
     @JoinColumn({ name: 'organizacion_id'})
     organizacion?: OrganizacionSQL;
 
-    @Column({ type: 'varchar', length: 50 })
-    estado: string = ' ';
-
-    @Column({ type: 'timestamp', nullable: true })
-    fecha_solicitud?: Date;
-
-    @Column({ type: 'timestamp', nullable: true })
-    fecha_servicio?: Date;
-
-    @Column({ type: 'timestamp', nullable: true })
-    fecha_respuesta?: Date;
-
-    @Column({ type: 'text', nullable: true })
-    comentarios?: string;
-
-    @Column({ type: 'varchar', length: 500 })
-    ubicacion: string = ' ';
-
-    @OneToMany(() => ServicioSolicitudSQL, (servicioSolicitud) => servicioSolicitud.solicitud)
-    servicioSolicitudes?: ServicioSolicitudSQL[];
+    @ManyToOne(() => ServicioSQL, (servicios) => servicios.solicitudes)
+    @JoinColumn({ name: 'servicios_id' })
+    servicio?: ServicioSQL;
 
     @OneToMany(() => PagoSQL, (pago) => pago.solicitud)
     pagos?: PagoSQL[];
