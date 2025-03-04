@@ -21,7 +21,7 @@ export class PagoSQL {
     @Column({ type: 'text', nullable: true })
     detalles?: string;
 
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
+    @Column({ type: 'decimal' })
     solicitud_id: number = 0;
 
     @ManyToOne(() => SolicitudSQL, (solicitud) => solicitud.pagos)
