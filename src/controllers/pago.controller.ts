@@ -14,8 +14,12 @@ export class PaymentController {
 
     async createPayment(req: Request, res: Response, next: NextFunction) {
         try {
-            await pagoService.createPayment(req.body);
-            res.json({ message: "Payment created successfully" });
+            const payment = await pagoService.createPayment(req.body);
+            res.json({
+                message: "Payment created successfully",
+                pago_id: payment.pago_id,
+                solicitud_id: payment.solicitud?.solicitud_id,
+            });
         } catch (error) {
             res.status(500).json({ message: "Error creating payment", error });
         }

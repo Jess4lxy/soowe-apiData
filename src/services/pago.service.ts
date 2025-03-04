@@ -5,7 +5,9 @@ import { SolicitudSQL } from '../models/solicitudSQL.model';
 class PaymentService {
     public async getAllPayments(): Promise<PagoSQL[]> {
         try {
-            return await AppDataSource.getRepository(PagoSQL).find();
+            return await AppDataSource.getRepository(PagoSQL).find({
+                relations: ['solicitud'],
+            });
         } catch (error) {
             console.error('Error fetching all payments:', error);
             throw error;

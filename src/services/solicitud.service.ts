@@ -23,7 +23,7 @@ class SolicitudService {
         });
 
         const solicitudGuardada = await solicitudRepository.save(nuevaSolicitudSQL);
-        
+
         console.log(solicitudGuardada.solicitud_id);
 
         return solicitudGuardada;
@@ -40,13 +40,8 @@ class SolicitudService {
 
     public async createSolicitud(data: ISolicitud, servicioId: number): Promise<number> {
         try {
-            console.log('Recibido servicioId:', servicioId);
             const nuevaSolicitudSQL = await this.createSolicitudSQL(servicioId);
-
-            console.log('nuevaSolicitudSQL:', nuevaSolicitudSQL);
-            console.log('nuevaSolicitudSQL.solicitud_id:', nuevaSolicitudSQL.solicitud_id);
             const solicitudSQLId = nuevaSolicitudSQL.solicitud_id;
-            console.log('solicitudSQLId:', solicitudSQLId);
 
             if (solicitudSQLId !== undefined && solicitudSQLId !== null) {
                 await this.createSolicitudMongo(data, solicitudSQLId);
