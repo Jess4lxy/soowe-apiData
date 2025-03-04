@@ -23,8 +23,7 @@ export class SolicitudController {
     async createSolicitud(req: Request, res: Response, next: NextFunction) {
         try {
             const solicitud_id = await solicitudService.createSolicitud(req.body, req.body.servicioId);
-            console.log("Datos recibidos en la API:", req.body);
-            res.json({ message: "Solicitud created successfully", solicitud_id });
+            res.json({ message: "Solicitud created successfully", solicitud_id, data: req.body });
         } catch (error) {
             res.status(500).json({ message: "Error creating solicitud", error });
         }
