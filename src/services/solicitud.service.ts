@@ -138,19 +138,17 @@ class SolicitudService {
 
     public async getUnassignedSolicitudes(): Promise<any[]> {
         try {
-            // Obtener todas las solicitudes combinadas
-            const allSolicitudes = await this.getSolicitudes();
+            const solicitudesSQL = await AppDataSource.getRepository(SolicitudSQL).find({ relations: ['organizacion', 'servicio'] });
+            const solicitudesMongo = await Solicitud.find();
 
-            // Filtrar solo aquellas solicitudes donde 'organizacion_id' y 'enfermero_id' sean null
-            const unassignedSolicitudes = allSolicitudes.filter(solicitud =>
-                solicitud.organizacion_id === null && solicitud.enfermero_id === null
-            );
-
-            return unassignedSolicitudes;
-
+            // Combinar los datos de ambas bases de datos por pg_solicitud_id
+            return solicitudesSQL.map(sql => {
+                const mongo = solicitudesMongo.find(m => m.pg_solicitud_id === sql.solicitud_id);
+                return { ...sql, ...mongo?.toObject() };
+            });
         } catch (error) {
-            console.error('Error getting unassigned solicitudes:', error);
-            throw new Error('Error fetching unassigned solicitudes');
+            console.error('Error getting solicitudes:', error);
+            throw new Error('Error creating Mongo solicitud');
         }
     }
 
