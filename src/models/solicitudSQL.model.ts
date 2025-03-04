@@ -9,8 +9,11 @@ export class SolicitudSQL {
     solicitud_id?: number = 0;
 
     @ManyToOne(() => OrganizacionSQL, (organizacion) => organizacion.solicitudes)
-    @JoinColumn({ name: 'organizacion_id'})
+    @JoinColumn({ name: 'organizacion_id' })
     organizacion?: OrganizacionSQL;
+
+    @Column({ name: 'organizacion_id', nullable: true })
+    organizacion_id?: number;
 
     @ManyToOne(() => ServicioSQL, (servicios) => servicios.solicitudes)
     @JoinColumn({ name: 'servicios_id' })
