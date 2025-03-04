@@ -131,15 +131,14 @@ class SolicitudService {
 
     public async getUnassignedSolicitudes(): Promise<SolicitudSQL[]> {
         try {
-            const solicitudesMongo = await Solicitud.find({where: { enfermero_id: null, organizacion_id: null }});
-            const solicitudesPg = await AppDataSource.getRepository(SolicitudSQL).find({
-                where: { organizacion: IsNull(),
-                },
-                relations: ['organizacion'],
-            });
+            const solicitudesMongo = await Solicitud.find({ where: { enfermero_id: null, organizacion_id: null } });
+            const solicitudesPg = await AppDataSource.getRepository(SolicitudSQL).find({ where: { organizacion: IsNull() } });
 
-            return solicitudesPg.map(solicitudSQL => {
+            const validSolicitudesPg = solicitudesPg.filter(solicitud => solicitud.solicitud_id !== undefined && !isNaN(solicitud.solicitud_id));
+
+            return validSolicitudesPg.map(solicitudSQL => {
                 const solicitudMongo = solicitudesMongo.find(s => s.pg_solicitud_id === solicitudSQL.solicitud_id);
+
                 return {
                     ...solicitudSQL,
                     ...(solicitudMongo ? solicitudMongo.toObject() : {}),
