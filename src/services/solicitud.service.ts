@@ -38,7 +38,7 @@ class SolicitudService {
         try {
             const nuevaSolicitudSQL = await this.createSolicitudSQL(servicioId);
 
-            if (nuevaSolicitudSQL.solicitud_id !== undefined) {
+            if (nuevaSolicitudSQL.solicitud_id !== undefined && nuevaSolicitudSQL.solicitud_id !== null) {
                 await this.createSolicitudMongo(data, nuevaSolicitudSQL.solicitud_id);
             } else {
                 throw new Error('Failed to create solicitud: solicitud_id is undefined');
@@ -132,7 +132,9 @@ class SolicitudService {
     public async getUnassignedSolicitudes(): Promise<SolicitudSQL[]> {
         try {
             const solicitudesMongo = await Solicitud.find({ where: { enfermero_id: null, organizacion_id: null } });
+            console.log(solicitudesMongo);
             const solicitudesPg = await AppDataSource.getRepository(SolicitudSQL).find({ where: { organizacion: IsNull() } });
+            console.log(solicitudesPg);
 
             const validSolicitudesPg = solicitudesPg.filter(solicitud => solicitud.solicitud_id !== undefined && !isNaN(solicitud.solicitud_id));
 
