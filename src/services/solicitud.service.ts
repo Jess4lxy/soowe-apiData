@@ -23,7 +23,7 @@ class SolicitudService {
         });
 
         const solicitudGuardada = await solicitudRepository.save(nuevaSolicitudSQL);
-
+        
         console.log(solicitudGuardada.solicitud_id);
 
         return solicitudGuardada;
