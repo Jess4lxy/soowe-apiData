@@ -138,19 +138,31 @@ class SolicitudService {
 
     public async getUnassignedSolicitudes(): Promise<any[]> {
         try {
+            // Obtener las solicitudes de MongoDB con estado "pendiente" y donde enfermero_id y organizacion_id son null
             const solicitudesMongo = await Solicitud.find({
-                where: { estado: "pendiente"}
+                where: { estado: "pendiente", enfermero_id: null, organizacion_id: null }
             });
-
+    
             if (solicitudesMongo.length === 0) {
-                return [];
+                return []; // Si no hay solicitudes pendientes no asignadas, retornar un arreglo vacío
             }
-
+    
+            // Asegurarnos de que los pg_solicitud_id no sean null ni undefined
+            const solicitudIds = solicitudesMongo
+                .map(s => s.pg_solicitud_id)
+                .filter(id => id !== null && id !== undefined);
+    
+            if (solicitudIds.length === 0) {
+                return []; // Si no hay ids válidos, retornar un arreglo vacío
+            }
+    
+            // Obtener solicitudes de PostgreSQL basadas en los pg_solicitud_id de MongoDB
             const solicitudesPg = await AppDataSource.getRepository(SolicitudSQL).find({
-                where: { solicitud_id: In(solicitudesMongo.map(s => s.pg_solicitud_id)) },
-                relations: ['organizacion', 'servicio']
+                where: { solicitud_id: In(solicitudIds) },
+                relations: ['organizacion', 'servicio'] // Relacionar con 'organizacion' y 'servicio'
             });
-
+    
+            // Combinar los datos de MongoDB y PostgreSQL, devolviendo el formato de respuesta esperado
             return solicitudesPg.map(solicitudSQL => {
                 const solicitudMongo = solicitudesMongo.find(s => s.pg_solicitud_id === solicitudSQL.solicitud_id);
                 return {
@@ -175,6 +187,7 @@ class SolicitudService {
             throw error;
         }
     }
+    
 
     public async getSolicitudPayments(solicitudId: number): Promise<any> {
         try {
