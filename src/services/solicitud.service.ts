@@ -42,6 +42,7 @@ class SolicitudService {
         try {
             const nuevaSolicitudSQL = await this.createSolicitudSQL(servicioId);
 
+            console.log('nuevaSolicitudSQL:', nuevaSolicitudSQL);
             console.log('nuevaSolicitudSQL.solicitud_id:', nuevaSolicitudSQL.solicitud_id);
             const solicitudSQLId = nuevaSolicitudSQL.solicitud_id;
             console.log('solicitudSQLId:', solicitudSQLId);
