@@ -14,6 +14,7 @@ export class PaymentController {
 
     async createPayment(req: Request, res: Response, next: NextFunction) {
         try {
+            console.log('Request body:', req.body);
             const payment = await pagoService.createPayment(req.body);
             res.json({
                 message: "Payment created successfully",
@@ -26,7 +27,7 @@ export class PaymentController {
             } else {
                 console.error('Error creating payment:', error);
             }
-         res.status(500).json({ message: "Error creating payment", error: (error as Error).message });
+            res.status(500).json({ message: "Error creating payment", error: (error as Error).message });
         }
     }
 
