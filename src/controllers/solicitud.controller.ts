@@ -43,9 +43,7 @@ export class SolicitudController {
 
     async getAllUnassignedSolicitudes(req: Request, res: Response, next: NextFunction) {
         try {
-            // Llamar al servicio para obtener las solicitudes
             const unassignedSolicitudes = await solicitudService.getUnassignedSolicitudes();
-            console.log('Solicitudes entrantes:', unassignedSolicitudes); // Verificar las solicitudes antes de enviar la respuesta
             res.json(unassignedSolicitudes);
         } catch (error) {
             res.status(500).json({ message: "Error fetching unassigned solicitudes", error });
