@@ -136,45 +136,56 @@ class SolicitudService {
 
     // updating solicitud and deleting solicitudes will be added later, if needed
 
-    public async getUnassignedSolicitudes(): Promise<any[]> {
-        try {
-            const solicitudesMongo = await Solicitud.find({
-                where: { estado: "pendiente"}
-            });
+    // En el servicio de solicitudes
+public async getUnassignedSolicitudes(): Promise<any[]> {
+    try {
+        // Obtener solicitudes con estado "pendiente" desde MongoDB
+        const solicitudesMongo = await Solicitud.find({
+            where: { estado: "pendiente" }
+        });
 
-            if (solicitudesMongo.length === 0) {
-                return [];
-            }
+        console.log('Solicitudes en MongoDB:', solicitudesMongo); // Verificar solicitudes en MongoDB
 
-            const solicitudesPg = await AppDataSource.getRepository(SolicitudSQL).find({
-                where: { solicitud_id: In(solicitudesMongo.map(s => s.pg_solicitud_id)) },
-                relations: ['organizacion', 'servicio'] // Relacionar con 'organizacion' y 'servicio'
-            });
-
-            return solicitudesPg.map(solicitudSQL => {
-                const solicitudMongo = solicitudesMongo.find(s => s.pg_solicitud_id === solicitudSQL.solicitud_id);
-                return {
-                    solicitud_id: solicitudSQL.solicitud_id,
-                    organizacion_id: solicitudSQL.organizacion_id,
-                    organizacion: solicitudSQL.organizacion,
-                    servicio: solicitudSQL.servicio,
-                    usuario_id: solicitudMongo?.usuario_id,
-                    paciente_id: solicitudMongo?.paciente_id,
-                    enfermero_id: solicitudMongo?.enfermero_id,
-                    estado: solicitudMongo?.estado,
-                    metodo_pago: solicitudMongo?.metodo_pago,
-                    fecha_solicitud: solicitudMongo?.fecha_solicitud,
-                    fecha_servicio: solicitudMongo?.fecha_servicio,
-                    fecha_respuesta: solicitudMongo?.fecha_respuesta,
-                    comentarios: solicitudMongo?.comentarios,
-                    ubicacion: solicitudMongo?.ubicacion,
-                };
-            });
-        } catch (error) {
-            console.error('Error getting unassigned solicitudes:', error);
-            throw error;
+        if (solicitudesMongo.length === 0) {
+            return [];
         }
+
+        // Obtener solicitudes desde PostgreSQL con los IDs de MongoDB
+        const pgIds = solicitudesMongo.map(s => s.pg_solicitud_id);
+        console.log('IDs de solicitudes en PostgreSQL:', pgIds); // Verificar los IDs
+
+        const solicitudesPg = await AppDataSource.getRepository(SolicitudSQL).find({
+            where: { solicitud_id: In(pgIds) },
+            relations: ['organizacion', 'servicio'] // Relacionar con 'organizacion' y 'servicio'
+        });
+
+        console.log('Solicitudes de PostgreSQL:', solicitudesPg); // Verificar las solicitudes obtenidas de PostgreSQL
+
+        // Combinar las solicitudes de PostgreSQL y MongoDB
+        return solicitudesPg.map(solicitudSQL => {
+            const solicitudMongo = solicitudesMongo.find(s => s.pg_solicitud_id === solicitudSQL.solicitud_id);
+            return {
+                solicitud_id: solicitudSQL.solicitud_id,
+                organizacion_id: solicitudSQL.organizacion_id,
+                organizacion: solicitudSQL.organizacion,
+                servicio: solicitudSQL.servicio,
+                usuario_id: solicitudMongo?.usuario_id,
+                paciente_id: solicitudMongo?.paciente_id,
+                enfermero_id: solicitudMongo?.enfermero_id,
+                estado: solicitudMongo?.estado,
+                metodo_pago: solicitudMongo?.metodo_pago,
+                fecha_solicitud: solicitudMongo?.fecha_solicitud,
+                fecha_servicio: solicitudMongo?.fecha_servicio,
+                fecha_respuesta: solicitudMongo?.fecha_respuesta,
+                comentarios: solicitudMongo?.comentarios,
+                ubicacion: solicitudMongo?.ubicacion,
+            };
+        });
+    } catch (error) {
+        console.error('Error getting unassigned solicitudes:', error);
+        throw error;
     }
+}
 
     public async getSolicitudPayments(solicitudId: number): Promise<any> {
         try {
