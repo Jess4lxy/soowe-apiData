@@ -132,7 +132,11 @@ class SolicitudService {
     public async getUnassignedSolicitudes(): Promise<SolicitudSQL[]> {
         try {
             const solicitudesMongo = await Solicitud.find({where: { enfermero_id: null, organizacion_id: null }});
-            const solicitudesPg = await AppDataSource.getRepository(SolicitudSQL).find({ where: { organizacion: IsNull() } });
+            const solicitudesPg = await AppDataSource.getRepository(SolicitudSQL).find({
+                where: { organizacion: IsNull(),
+                },
+                relations: ['organizacion'],
+            });
 
             return solicitudesPg.map(solicitudSQL => {
                 const solicitudMongo = solicitudesMongo.find(s => s.pg_solicitud_id === solicitudSQL.solicitud_id);
