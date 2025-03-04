@@ -22,7 +22,11 @@ class SolicitudService {
             servicio,
         });
 
-        return await solicitudRepository.save(nuevaSolicitudSQL);
+        const solicitudGuardada = await solicitudRepository.save(nuevaSolicitudSQL);
+
+        console.log(solicitudGuardada.solicitud_id);
+
+        return solicitudGuardada;
     }
 
     private async createSolicitudMongo(data: ISolicitud, pg_solicitud_id: number): Promise<void> {
@@ -39,6 +43,7 @@ class SolicitudService {
             const nuevaSolicitudSQL = await this.createSolicitudSQL(servicioId);
 
             if (nuevaSolicitudSQL.solicitud_id !== undefined && nuevaSolicitudSQL.solicitud_id !== null) {
+                console.log('pg_solicitud_id:', nuevaSolicitudSQL.solicitud_id);
                 await this.createSolicitudMongo(data, nuevaSolicitudSQL.solicitud_id);
             } else {
                 throw new Error('Failed to create solicitud: solicitud_id is undefined');
