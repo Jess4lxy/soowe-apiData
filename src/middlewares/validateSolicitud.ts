@@ -8,7 +8,7 @@ export const validateSolicitudRules = [
     body('paciente_id')
         .isString()
         .withMessage('El id debe ser valido'),
-    body('solicitudes_id')
+    body('servicios_id')
         .isInt()
         .withMessage('El id de solicitud debe ser un número entero'),
     body('estado')
