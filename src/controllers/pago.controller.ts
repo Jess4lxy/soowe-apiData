@@ -15,7 +15,9 @@ export class PaymentController {
     async createPayment(req: Request, res: Response, next: NextFunction) {
         try {
             console.log('Request body:', req.body);
+
             const payment = await pagoService.createPayment(req.body);
+
             res.json({
                 message: "Payment created successfully",
                 pago_id: payment.pago_id,
@@ -23,11 +25,13 @@ export class PaymentController {
             });
         } catch (error) {
             if (error instanceof Error) {
-                console.error('Error creating payment:', error.stack || error);
+                console.error('Error creating payment:', error.stack || error.message);
             } else {
                 console.error('Error creating payment:', error);
             }
-            res.status(500).json({ message: "Error creating payment", error: (error as Error).message });
+
+            // Enviamos una respuesta de error
+            res.status(500).json({ message: "Error creating payment", error: error instanceof Error ? error.message : 'Unknown error' });
         }
     }
 

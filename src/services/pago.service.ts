@@ -29,22 +29,23 @@ class PaymentService {
 
     public async createPayment(data: PagoSQL): Promise<PagoSQL> {
         try {
-            if (data.solicitud && data.solicitud.solicitud_id) {  // Asegúrate de que 'solicitud_id' esté en 'data.solicitud'
-                const solicitud = await AppDataSource.getRepository(SolicitudSQL).findOneBy({ solicitud_id: data.solicitud.solicitud_id });
+            if (data.solicitud_id) {
+                const solicitud = await AppDataSource.getRepository(SolicitudSQL).findOneBy({ solicitud_id: data.solicitud_id });
                 if (!solicitud) {
                     throw new Error('Solicitud not found');
                 }
-                // Asignamos la entidad 'solicitud' encontrada al campo 'solicitud' de PagoSQL
+
                 data.solicitud = solicitud;
             } else {
                 throw new Error('Solicitud ID is required');
             }
-    
+
             const payment = AppDataSource.getRepository(PagoSQL).create(data);
             const savedPayment = await AppDataSource.getRepository(PagoSQL).save(payment);
             return savedPayment;
         } catch (error) {
-            console.error('Error creating payment:', (error as any).stack || (error as any).message);
+            const err = error as any;
+            console.error('Error creating payment:', err.stack || err.message);
             throw error;
         }
     }
