@@ -32,7 +32,8 @@ export class SolicitudController {
 
     async assignEnfermeroToSolicitud(req: Request, res: Response, next: NextFunction) {
         try {
-            const { solicitudId, enfermeroId } = req.body;
+            const solicitudId = Number(req.params.id);  // Tomamos el ID de la solicitud de los parámetros de la URL
+            const enfermeroId = Number(req.params.enfermeroId);  // Tomamos el ID del enfermero de los parámetros de la URL
             await solicitudService.assignEnfermeroToSolicitud(solicitudId, enfermeroId);
             res.json({ message: "Enfermero assigned successfully" });
         } catch (error) {

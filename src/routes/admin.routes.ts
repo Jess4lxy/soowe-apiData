@@ -60,6 +60,7 @@ adminRouter.get('/solicitudes', asyncHandler(solicitudController.getSolicitudes.
 adminRouter.get('/solicitudes/entrantes', asyncHandler(solicitudController.getAllUnassignedSolicitudes.bind(solicitudController)));
 adminRouter.get('/solicitudes/:id', asyncHandler(solicitudController.getSolicitudById.bind(solicitudController)));
 adminRouter.get('/solicitudes/:id/pagos', asyncHandler(solicitudController.getSolicitudPayments.bind(solicitudController)));
+adminRouter.put('/solicitudes/:id/enfermero/:enfermeroId', asyncHandler(solicitudController.assignEnfermeroToSolicitud.bind(solicitudController)));
 
 /**
  * end of router
