@@ -21,7 +21,7 @@ const mobileRouter = Router();
 // Mobile App Routes for Enfermeros
 mobileRouter.get('/enfermeros', asyncHandler(EnfermeroController.getEnfermerosMongo.bind(EnfermeroController)));
 mobileRouter.get('/enfermeros/:id', asyncHandler(EnfermeroController.getEnfermeroByIdMongo.bind(EnfermeroController)));
-mobileRouter.get('/enfermeros/:id/solicitudes', asyncHandler(EnfermeroController.getSolicitudesEnfermeroMongo.bind(EnfermeroController)));
+mobileRouter.get('/enfermeros/:id/solicitudes', asyncHandler(EnfermeroController.getSolicitudesEnfermero.bind(EnfermeroController)));
 
 // Mobile App Routes for Solicitudes
 mobileRouter.get('/solicitudes', asyncHandler(solicitudController.getSolicitudes.bind(solicitudController)));

@@ -149,7 +149,7 @@ class SolicitudService {
             const solicitudesPg = await AppDataSource.getRepository(SolicitudSQL).find({
                 relations: ['organizacion', 'servicio'] // Relacionar con 'organizacion' y 'servicio'
             });
-    
+            
             // Mapear las solicitudes de PostgreSQL y combinar con las de MongoDB
             const solicitudesCombinadas = solicitudesPg.map(solicitudSQL => {
                 const solicitudMongo = solicitudesMongo.find(s => s.pg_solicitud_id === solicitudSQL.solicitud_id);

@@ -8,6 +8,8 @@ import { OrganizacionSQL } from '../models/organizacionSQL.model';
 import { CLOUDINARY_FOLDERS } from '../utils/constants';
 import Solicitud from '../models/solicitud.model';
 import { ISolicitud } from '../models/solicitud.model';
+import { SolicitudSQL } from '../models/solicitudSQL.model';
+import { In } from 'typeorm';
 
 class EnfermeroService {
     private async saveEnfermeroPostgres(data: IEnfermero): Promise<EnfermeroSQL> {
@@ -176,9 +178,41 @@ class EnfermeroService {
     }
 
     // Get solicitudes related with the Enfermero in mongo (for mobile use)
-    public async getSolicitudesEnfermeroMongo(id: string): Promise<ISolicitud[]> {
+    public async getSolicitudesEnfermero(id: string): Promise<any[]> {
         try {
-            return await Solicitud.find({ enfermero_id: id });
+            const solicitudesMongo = await Solicitud.find({ enfermero_id: id });
+
+            if (!solicitudesMongo) {
+                throw new Error('No solicitudes found in MongoDB');
+            }
+
+            const solicitudesPg = await AppDataSource.getRepository(SolicitudSQL).find({
+                where: { solicitud_id: In(solicitudesMongo.map((solicitud) => solicitud.pg_solicitud_id)) },
+                relations: ['organizacion', 'servicio']
+            });
+
+            const solicitudesCombinadas = solicitudesPg.map(solicitudSQL => {
+                const solicitudMongo = solicitudesMongo.find(s => s.pg_solicitud_id === solicitudSQL.solicitud_id);
+                return {
+                    solicitud_id: solicitudSQL.solicitud_id,
+                    organizacion_id: solicitudSQL.organizacion_id,
+                    organizacion: solicitudSQL.organizacion,
+                    servicio: solicitudSQL.servicio,
+                    usuario_id: solicitudMongo?.usuario_id,
+                    paciente_id: solicitudMongo?.paciente_id,
+                    enfermero_id: solicitudMongo?.enfermero_id,
+                    estado: solicitudMongo?.estado,
+                    metodo_pago: solicitudMongo?.metodo_pago,
+                    fecha_solicitud: solicitudMongo?.fecha_solicitud,
+                    fecha_servicio: solicitudMongo?.fecha_servicio,
+                    fecha_respuesta: solicitudMongo?.fecha_respuesta,
+                    comentarios: solicitudMongo?.comentarios,
+                    ubicacion: solicitudMongo?.ubicacion,
+                    pg_solicitud_id: solicitudMongo?.pg_solicitud_id
+                };
+            });
+
+            return solicitudesCombinadas;
         } catch (error) {
             console.error('Error getting the solicitudes in MongoDB:', error);
             throw error;

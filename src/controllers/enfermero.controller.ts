@@ -79,9 +79,9 @@ class EnfermeroController {
         }
     }
 
-    public async getSolicitudesEnfermeroMongo(req: Request, res: Response): Promise<void> {
+    public async getSolicitudesEnfermero(req: Request, res: Response): Promise<void> {
         try {
-            const solicitudes = await EnfermeroService.getSolicitudesEnfermeroMongo(req.params.id);
+            const solicitudes = await EnfermeroService.getSolicitudesEnfermero(req.params.id);
             res.status(200).json(solicitudes);
         } catch (error) {
             res.status(500).json({ error: 'Error getting the solicitudes of the enfermero from MongoDB' });
