@@ -80,11 +80,39 @@ export class OrganizacionService {
 
     async getOrganizacionSolicitudes(id: number): Promise<any> {
         try {
-            const rawSolicitudes = await solicitudService.getSolicitudes();
+                const solicitudesMongo = await Solicitud.find();
 
-            const solicitudesOrganizacion = rawSolicitudes.filter(solicitudes => solicitudes.organizacion_id === id);
+                if (solicitudesMongo.length === 0) {
+                    return [];
+                }
 
-            return solicitudesOrganizacion;
+                const solicitudesPg = await AppDataSource.getRepository(SolicitudSQL).find({
+                    relations: ['servicio']
+                });
+
+                const rawSolicitudes = solicitudesPg.map(solicitudSQL => {
+                    const solicitudMongo = solicitudesMongo.find(s => s.pg_solicitud_id === solicitudSQL.solicitud_id);
+                    return {
+                        solicitud_id: solicitudSQL.solicitud_id,
+                        organizacion_id: solicitudSQL.organizacion_id,
+                        servicio: solicitudSQL.servicio,
+                        usuario_id: solicitudMongo?.usuario_id,
+                        paciente_id: solicitudMongo?.paciente_id,
+                        enfermero_id: solicitudMongo?.enfermero_id,
+                        estado: solicitudMongo?.estado,
+                        metodo_pago: solicitudMongo?.metodo_pago,
+                        fecha_solicitud: solicitudMongo?.fecha_solicitud,
+                        fecha_servicio: solicitudMongo?.fecha_servicio,
+                        fecha_respuesta: solicitudMongo?.fecha_respuesta,
+                        comentarios: solicitudMongo?.comentarios,
+                        ubicacion: solicitudMongo?.ubicacion,
+                        pg_solicitud_id: solicitudMongo?.pg_solicitud_id
+                    };
+                });
+
+                const solicitudesOrganizacion = rawSolicitudes.filter(solicitudes => solicitudes.organizacion_id === id);
+
+                return solicitudesOrganizacion;
         } catch (error) {
             console.error('Error getting solicitud:', error);
             throw error;
