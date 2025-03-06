@@ -1,6 +1,10 @@
 import { Repository } from 'typeorm';
 import { AppDataSource } from '../config/data-source';
 import { OrganizacionSQL } from '../models/organizacionSQL.model';
+import Solicitud from '../models/solicitud.model';
+import { SolicitudSQL } from '../models/solicitudSQL.model';
+import { ISolicitud } from '../models/solicitud.model';
+import solicitudService from './solicitud.service';
 
 export class OrganizacionService {
     private organizacionRepository: Repository<OrganizacionSQL>;
@@ -70,6 +74,19 @@ export class OrganizacionService {
             return result.affected !== 0;
         } catch (error) {
             console.error(`Error deleting organizacion with ID ${id}:`, error);
+            throw error;
+        }
+    }
+
+    async getOrganizacionSolicitudes(id: number): Promise<any> {
+        try {
+            const rawSolicitudes = await solicitudService.getSolicitudes();
+
+            const solicitudesOrganizacion = rawSolicitudes.filter(solicitudes => solicitudes.organizacion_id === id);
+
+            return solicitudesOrganizacion;
+        } catch (error) {
+            console.error('Error getting solicitud:', error);
             throw error;
         }
     }

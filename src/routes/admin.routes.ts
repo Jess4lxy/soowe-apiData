@@ -30,6 +30,7 @@ adminRouter.delete('/enfermeros/:id', asyncHandler(EnfermeroController.deleteEnf
 // organizaciones routes
 adminRouter.get('/organizaciones', asyncHandler(organizacionController.getAllOrganizaciones.bind(organizacionController)));
 adminRouter.get('/organizaciones/:id', asyncHandler(organizacionController.getOrganizacionById.bind(organizacionController)));
+adminRouter.get('/organizaciones/:id/solicitudes', asyncHandler(organizacionController.getOrganizacionSolicitudes.bind(organizacionController)));
 adminRouter.post('/organizaciones', [...validateOrganizacionRules, validateOrganizacion], asyncHandler(organizacionController.createOrganizacion.bind(organizacionController)));
 adminRouter.put('/organizaciones/:id', [...validateOrganizacionRules, validateOrganizacion], asyncHandler(organizacionController.updateOrganizacion.bind(organizacionController)));
 adminRouter.delete('/organizaciones/:id', asyncHandler(organizacionController.deleteOrganizacion.bind(organizacionController)));

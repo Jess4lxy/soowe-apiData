@@ -70,6 +70,16 @@ export class OrganizacionController {
             res.status(500).json({ message: 'Error deleting organization', error });
         }
     }
+
+    public async getOrganizacionSolicitudes(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { id } = req.params;
+            const solicitudes = await this.organizacionService.getOrganizacionSolicitudes(Number(id));
+            res.json(solicitudes);
+        } catch (error) {
+            res.status(500).json({ message: 'Error fetching organization solicitudes', error });
+        }
+    }
 }
 
 export default new OrganizacionController();
