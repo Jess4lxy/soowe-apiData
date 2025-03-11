@@ -94,7 +94,7 @@ class SolicitudService {
                 enfermero = enfermeroResult;
             }
 
-            return { ...solicitudSQL, ...solicitudMongo?.toObject(), ...enfermero };
+            return { ...solicitudSQL, ...solicitudMongo?.toObject(), enfermero };
         } catch (error) {
             console.error('Error getting solicitud:', error);
             throw error;
