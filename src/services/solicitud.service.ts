@@ -84,7 +84,13 @@ class SolicitudService {
             if (!solicitudSQL) return null;
 
             const solicitudMongo = await Solicitud.findOne({ pg_solicitud_id: id });
-            return { ...solicitudSQL, ...solicitudMongo?.toObject() };
+
+            let enfermero: IEnfermero | null = null;
+            if (solicitudMongo?.enfermero_id != null) {
+                enfermero = await Enfermero.findOne({ enfermero_id: solicitudMongo?.enfermero_id });
+            }
+
+            return { ...solicitudSQL, ...solicitudMongo?.toObject(), ...enfermero };
         } catch (error) {
             console.error('Error getting solicitud:', error);
             throw error;
@@ -146,7 +152,7 @@ class SolicitudService {
             }
     
             // Obtener todas las solicitudes desde PostgreSQL
-            const solicitudesPg = await AppDataSource.getRepository(SolicitudSQL).find({
+            const solicitudesPg = await AppDataSource.getRepository(SolicitudSQL).find({ 
                 relations: ['organizacion', 'servicio'] // Relacionar con 'organizacion' y 'servicio'
             });
             
