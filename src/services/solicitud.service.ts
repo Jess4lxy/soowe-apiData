@@ -6,8 +6,8 @@ import { ServicioSQL } from '../models/servicioSQL.model';
 import Enfermero from '../models/enfermero.model';
 import { IEnfermero } from '../models/enfermero.model';
 import { OrganizacionSQL } from '../models/organizacionSQL.model';
-import { IsNull } from 'typeorm';
-import { In } from 'typeorm';
+import enfermeroService from './enfermero.service';
+import { EnfermeroSQL } from '../models/enfermeroSQL.model';
 
 class SolicitudService {
     private async createSolicitudSQL(servicioId: number): Promise<SolicitudSQL> {
@@ -85,9 +85,13 @@ class SolicitudService {
 
             const solicitudMongo = await Solicitud.findOne({ pg_solicitud_id: id });
 
-            let enfermero: IEnfermero | null = null;
+            let enfermero: EnfermeroSQL = {} as EnfermeroSQL;
             if (solicitudMongo?.enfermero_id != null) {
-                enfermero = await Enfermero.findOne({ enfermero_id: solicitudMongo?.enfermero_id });
+                const enfermeroResult = await enfermeroService.getEnfermeroByIdSQL(solicitudMongo.enfermero_id);
+                if (!enfermeroResult) {
+                    throw new Error('Enfermero no encontrado');
+                }
+                enfermero = enfermeroResult;
             }
 
             return { ...solicitudSQL, ...solicitudMongo?.toObject(), ...enfermero };
