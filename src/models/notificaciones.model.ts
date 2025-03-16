@@ -8,6 +8,7 @@ export interface INotificacion extends Document {
   fechaCreacion: Date;
   leida: boolean;
   estadoAsignacion?: 'pendiente' | 'aceptada' | 'rechazada';
+  activo: boolean;
 }
 
 const NotificacionSchema = new Schema<INotificacion>({
@@ -18,6 +19,7 @@ const NotificacionSchema = new Schema<INotificacion>({
   fechaCreacion: { type: Date, default: Date.now },
   leida: { type: Boolean, default: false },
   estadoAsignacion: { type: String, enum: ['pendiente', 'aceptada', 'rechazada'], default: 'pendiente' },
+  activo: { type: Boolean, default: true },
 });
 
 export const Notificacion = model<INotificacion>('Notificaciones', NotificacionSchema, 'Notificaciones');

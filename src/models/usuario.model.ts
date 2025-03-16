@@ -12,6 +12,7 @@ export interface IUsuario extends Document {
         public_id: string;
     }
     pacientes: mongoose.Types.ObjectId[];
+    activo: boolean;
 }
 
 const usuarioSchema: Schema<IUsuario> = new Schema({
@@ -26,6 +27,7 @@ const usuarioSchema: Schema<IUsuario> = new Schema({
         public_id: { type: String, required: false }
     },
     pacientes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Pacientes' }],
+    activo: { type: Boolean, default: true }
 });
 
 const Usuario = mongoose.model<IUsuario>('Usuarios', usuarioSchema, 'Usuarios');

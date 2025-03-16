@@ -1,37 +1,44 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { EnfermeroSQL } from './enfermeroSQL.model';
 import { UsuarioSQL } from './usuarioSQL.model';
 import { SolicitudSQL } from './solicitudSQL.model';
+import { DocumentoOrganizacionSQL } from './documentosOrganizacionSQL.model';
 
 @Entity('organizaciones')
 export class OrganizacionSQL {
-    @PrimaryGeneratedColumn()
-    organizacion_id: number = 0;
+  @PrimaryGeneratedColumn()
+  organizacion_id: number = 0;
 
-    @Column({ type: 'varchar', length: 255 })
-    nombre: string = ' ';
+  @Column({ type: 'varchar', length: 255 })
+  nombre: string = ' ';
 
-    @Column({ type: 'varchar', length: 255, nullable: true })
-    direccion?: string;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  direccion?: string;
 
-    @Column({ type: 'varchar', length: 15, nullable: true })
-    telefono?: string;
+  @Column({ type: 'varchar', length: 15, nullable: true })
+  telefono?: string;
 
-    @Column({ type: 'varchar', length: 20})
-    cuenta_bancaria: string = ' ';
+  @Column({ type: 'varchar', length: 20 })
+  cuenta_bancaria: string = ' ';
 
-    @Column({ type: 'timestamp', nullable: true })
-    fecha_creacion?: Date;
+  @CreateDateColumn({ name: 'fecha_creacion', type: 'timestamp' })
+  fecha_creacion: Date = new Date();
 
-    @Column({ type: 'timestamp', nullable: true })
-    fecha_modificacion?: Date;
+  @UpdateDateColumn({ name: 'fecha_modificacion', type: 'timestamp', nullable: true, onUpdate: 'CURRENT_TIMESTAMP' })
+  fecha_modificacion?: Date;
 
-    @OneToMany(() => EnfermeroSQL, (enfermero) => enfermero.organizacion)
-    enfermeros?: EnfermeroSQL[];
+  @Column({ type: 'boolean', default: true })
+  activo: boolean = true;
 
-    @OneToMany(() => UsuarioSQL, (usuario) => usuario.organizacion)
-    usuarios_admin?: UsuarioSQL[];
+  @OneToMany(() => EnfermeroSQL, (enfermero) => enfermero.organizacion)
+  enfermeros?: EnfermeroSQL[];
 
-    @OneToMany(() => SolicitudSQL, (solicitudes) => solicitudes.organizacion)
-    solicitudes?: SolicitudSQL[];
+  @OneToMany(() => UsuarioSQL, (usuario) => usuario.organizacion)
+  usuarios_admin?: UsuarioSQL[];
+
+  @OneToMany(() => SolicitudSQL, (solicitud) => solicitud.organizacion)
+  solicitudes?: SolicitudSQL[];
+  
+  @OneToMany(() => DocumentoOrganizacionSQL, (documento) => documento.organizacion)
+  documentos?: DocumentoOrganizacionSQL[];
 }

@@ -12,6 +12,7 @@ export interface ISolicitud extends Document {
     pg_solicitud_id: number;
     comentarios?: string;
     ubicacion: string;
+    activo: boolean;
 }
 
 const solicitudSchema: Schema<ISolicitud> = new Schema({
@@ -26,6 +27,7 @@ const solicitudSchema: Schema<ISolicitud> = new Schema({
     pg_solicitud_id: { type: Number, required: true, unique: true },
     comentarios: { type: String, default: '' },
     ubicacion: { type: String, required: true },
+    activo: { type: Boolean, default: true }
 });
 
 const Solicitud = mongoose.model<ISolicitud>('Solicitudes', solicitudSchema, 'Solicitudes');

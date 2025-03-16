@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { OrganizacionSQL } from './organizacionSQL.model';
+import { DocumentoEnfermeroSQL } from './documentosEnfermeroSQL.model';
 
 @Entity('enfermeros')
 export class EnfermeroSQL {
@@ -28,12 +29,18 @@ export class EnfermeroSQL {
   @Column({ type: 'boolean', default: true })
   disponibilidad: boolean = true;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn({ name: 'fecha_creacion', type: 'timestamp' })
   fecha_creacion: Date = new Date();
 
-  @Column({ type: 'timestamp', nullable: true })
+  @UpdateDateColumn({ name: 'fecha_modificacion', type: 'timestamp', nullable: true, onUpdate: 'CURRENT_TIMESTAMP' })
   fecha_modificacion?: Date;
 
   @Column({ type: 'varchar', nullable: true })
   foto_perfil?: string;
+
+  @Column({ type: 'boolean', default: true })
+  activo: boolean = true;
+
+  @OneToMany(() => DocumentoEnfermeroSQL, (documento) => documento.enfermero)
+  documentos?: DocumentoEnfermeroSQL[];
 }

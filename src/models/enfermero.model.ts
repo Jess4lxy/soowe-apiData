@@ -22,6 +22,7 @@ export interface IEnfermero extends Document {
         url: string;
         public_id: string;
     }
+    activo: boolean;
 }
 
 const resenaSchema: Schema<IResena> = new Schema({
@@ -46,6 +47,7 @@ const enfermeroSchema: Schema<IEnfermero> = new Schema({
         url: { type: String, required: false },
         public_id: { type: String, required: false }
     },
+    activo: { type: Boolean, default: true }
 });
 
 const Enfermero = mongoose.model<IEnfermero>('Enfermeros', enfermeroSchema, 'Enfermeros');

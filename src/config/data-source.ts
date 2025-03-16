@@ -8,6 +8,8 @@ import { UsuarioSQL } from '../models/usuarioSQL.model';
 import { ServicioSQL } from '../models/servicioSQL.model';
 import { CategoriaSQL } from '../models/categoriaSQL.model';
 import { PagoSQL } from '../models/pagoSQL.model';
+import { DocumentoEnfermeroSQL } from '../models/documentosEnfermeroSQL.model';
+import { DocumentoOrganizacionSQL } from '../models/documentosOrganizacionSQL.model';
 
 config();
 
@@ -22,7 +24,7 @@ export const AppDataSource = new DataSource({
     database: process.env.POSTGRES_DB,
     synchronize: true, // only for development
     logging: false,
-    entities: [EnfermeroSQL, OrganizacionSQL, SolicitudSQL, UsuarioSQL, ServicioSQL, CategoriaSQL, PagoSQL], // all the relational entitys
+    entities: [EnfermeroSQL, OrganizacionSQL, SolicitudSQL, UsuarioSQL, ServicioSQL, CategoriaSQL, PagoSQL, DocumentoEnfermeroSQL, DocumentoOrganizacionSQL], // all the relational entitys
     ssl: isSSLRequired
     ? {
           rejectUnauthorized: false, // Use SSL if required
