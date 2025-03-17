@@ -65,7 +65,7 @@ export class CategoriaController {
                 res.status(404).json({ message: 'Categoria not found' });
                 return;
             }
-            res.json(deletedCategoria);
+            res.status(200).json({ message: 'Categoria eliminada correctamente' });
         } catch (error) {
             res.status(500).json({ message: 'Error deleting categoria', error });
         }

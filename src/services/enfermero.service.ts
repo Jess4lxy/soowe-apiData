@@ -64,11 +64,16 @@ class EnfermeroService {
     public async CreateEnfermero(data: IEnfermero): Promise<void> {
         try {
             if (data.foto_perfil && Buffer.isBuffer(data.foto_perfil)) {
-                const uploadResult = await uploadProfile(data.foto_perfil, CLOUDINARY_FOLDERS.NURSE_PROFILES);
-                data.foto_perfil = {
-                    url: uploadResult.secure_url,
-                    public_id: uploadResult.public_id,
-                };
+                try {
+                    const uploadResult = await uploadProfile(data.foto_perfil, CLOUDINARY_FOLDERS.NURSE_PROFILES);
+                    data.foto_perfil = {
+                        url: uploadResult.secure_url,
+                        public_id: uploadResult.public_id,
+                    };
+                } catch (uploadError) {
+                    console.error('Error uploading profile picture to Cloudinary:', uploadError);
+                    throw new Error('Error uploading profile picture');
+                }
             }
 
             const enfermeroSQL = await this.saveEnfermeroPostgres(data);
@@ -161,8 +166,8 @@ class EnfermeroService {
     // Delete an enfermero from both databases
     public async deleteEnfermero(id: string): Promise<void> {
         try {
-            // Delete from MongoDB
-            const enfermeroMongo = await Enfermero.findByIdAndDelete(id);
+            // delete in MongoDB
+            const enfermeroMongo = await Enfermero.findByIdAndUpdate (id, { activo: false });
 
             if (!enfermeroMongo) {
                 throw new Error('Enfermero not found in MongoDB');
@@ -170,7 +175,14 @@ class EnfermeroService {
 
             // Delete from PostgreSQL
             const entityManager = AppDataSource.manager;
-            await entityManager.delete(EnfermeroSQL, { correo: enfermeroMongo.correo });
+            const enfermeroSQL = await entityManager.findOne(EnfermeroSQL, {
+                where: { correo: enfermeroMongo.correo }
+            });
+
+            if (enfermeroSQL) {
+                enfermeroSQL.activo = false;
+                await entityManager.save(enfermeroSQL);
+            }
         } catch (error) {
             console.error('Error deleting the Enfermero:', error);
             throw error;

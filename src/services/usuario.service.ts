@@ -59,7 +59,7 @@ class UsuarioService {
 
     async deleteUser(id: string): Promise<void> {
         try {
-            await Usuario.findByIdAndDelete(id);
+            await Usuario.findByIdAndUpdate(id, { activo: false });
         } catch (error){
             console.error('Error deleting the user:', error);
             throw error;

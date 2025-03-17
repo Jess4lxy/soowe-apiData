@@ -59,6 +59,16 @@ export class SolicitudController {
             res.status(500).json({ message: "Error fetching payments", error });
         }
     }
+
+    async deleteSolicitud(req: Request, res: Response, next: NextFunction) {
+        try {
+            const solicitudId = Number(req.params.id);
+            await solicitudService.deleteSolicitud(solicitudId);
+            res.json({ message: "Solicitud deleted successfully" });
+        } catch (error) {
+            res.status(500).json({ message: "Error deleting solicitud", error });
+        }
+    }
 }
 
 export default new SolicitudController();

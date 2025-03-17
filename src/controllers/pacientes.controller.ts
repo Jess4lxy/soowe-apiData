@@ -43,7 +43,7 @@ export class PacienteController {
         try {
             const pacienteId = req.params.id;
             await PacienteService.deletePaciente(pacienteId);
-            res.json({ message: "Paciente deleted successfully" });
+            res.status(200).json({ message: "Paciente deleted successfully" });
         } catch (error) {
             res.status(500).json({ message: "Error deleting paciente", error });
         }

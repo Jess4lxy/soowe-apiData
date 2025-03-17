@@ -97,12 +97,12 @@ export class ServicioService {
 
     async delete(id: number): Promise<boolean> {
         try {
-            const result = await this.servicioRepository.findOne({
-                where: { servicios_id: id }
+            const servicio = await this.servicioRepository.findOne({
+                where: { servicios_id: id, activo: true }
             });
-            if (!result) return false;
+            if (!servicio) return false;
 
-            await this.servicioRepository.delete(id);
+            await this.servicioRepository.update(id, { activo: false });
             return true;
         } catch (error) {
             console.error(`Error deleting servicio with ID ${id}:`, error);

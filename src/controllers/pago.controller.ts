@@ -54,7 +54,15 @@ export class PaymentController {
         }
     }
 
-    // delete payment will be added later
+    async deletePayment(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const paymentId = parseInt(req.params.id, 10);
+            await pagoService.deletePayment(paymentId);
+            res.json({ message: "Payment deleted successfully" });
+        } catch (error) {
+            res.status(500).json({ message: "Error deleting payment", error });
+        }
+    }
 }
 
 export default new PaymentController();

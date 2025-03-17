@@ -70,8 +70,13 @@ export class OrganizacionService {
 
     async delete(id: number): Promise<boolean> {
         try {
-            const result = await this.organizacionRepository.delete(id);
-            return result.affected !== 0;
+            const organizacion = await this.organizacionRepository.findOne({
+                where: { organizacion_id: id }
+            });
+            if (!organizacion) return false;
+
+            await this.organizacionRepository.update(organizacion, { activo: true });
+            return true;
         } catch (error) {
             console.error(`Error deleting organizacion with ID ${id}:`, error);
             throw error;

@@ -46,7 +46,7 @@ class PacienteService {
 
     public async deletePaciente(id: string): Promise<void> {
         try {
-            await Paciente.findByIdAndDelete(id);
+            await Paciente.findByIdAndUpdate(id, { activo: false });
         } catch (error) {
             console.error('Error deleting paciente:', error);
             throw error;

@@ -89,7 +89,7 @@ export class UsuarioAdminService {
             });
             if (!admin) return false;
 
-            await this.usuarioAdminRepository.delete(id);
+            await this.usuarioAdminRepository.update(id, {activo: false});
             return true;
         } catch (error) {
             console.error(`Error deleting administrador with ID ${id}:`, error);

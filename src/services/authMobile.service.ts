@@ -11,8 +11,8 @@ const SECRET_KEY = process.env.JWT_SECRET || 'fallback_secret_key';
 class AuthMobileService {
     public async login(correo: string, contrasena: string): Promise<{token: string, role: string}> {
         try {
-            const validateUser: IUsuario | null = await Usuario.findOne({ correo });
-            const validateEnfermero: IEnfermero | null = await Enfermero.findOne({ correo });
+            const validateUser: IUsuario | null = await Usuario.findOne({ correo, activo: true });
+            const validateEnfermero: IEnfermero | null = await Enfermero.findOne({ correo, activo: true });
 
             let user: IUsuario | IEnfermero | null;
             let role: 'usuario' | 'enfermero';
@@ -23,12 +23,12 @@ class AuthMobileService {
                 user = validateEnfermero
                 role = 'enfermero';
             } else {
-                throw new Error('Email not found');
+                throw new Error('Correo no encontrado');
             }
 
             const validPassword = await bcryptjs.compare(contrasena, user.contrasena);
             if (!validPassword) {
-                throw new Error('Incorrect password');
+                throw new Error('Contraseña incorrecta');
             }
 
             const token = jwt.sign(

@@ -208,6 +208,27 @@ class SolicitudService {
             throw error;
         }
     }
+
+    public async deleteSolicitud(solicitudId: number): Promise<any> {
+        try{
+            const solicitudMongo = await Solicitud.findOne({pg_solicitud_id : solicitudId});
+            if (!solicitudMongo) {
+                throw new Error('Solicitud no encontrada en MongoDB');
+            }
+
+            await Solicitud.findByIdAndUpdate(solicitudMongo, {activo: false});
+
+            const solicitudRepository = AppDataSource.getRepository(SolicitudSQL);
+            const solicitudPostgres = await solicitudRepository.update(solicitudId, {activo: false});
+
+            if (!solicitudPostgres) {
+                throw new Error('Solicitud no encontrada en PostgreSQL');
+            }
+        } catch (error) {
+            console.error('Error deleting solicitud:', error);
+            throw error;
+        }
+    }
 }
 
 export default new SolicitudService();

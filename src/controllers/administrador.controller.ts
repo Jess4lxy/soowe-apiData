@@ -70,10 +70,10 @@ export class usuarioAdminController {
             const { id } = req.params;
             const deletedAdmin = await this.usuarioAdminService.delete(Number(id));
             if (!deletedAdmin) {
-                res.status(404).json({ message: 'Usuario no encontrado' });
+                res.status(404).json({ message: 'Administrador no encontrado' });
                 return;
             }
-            res.json(deletedAdmin);
+            res.status(200).json({ message: 'Administrador eliminado correctamente' });
         } catch (error) {
             res.status(500).json({ message: 'Error deleting admin', error });
     }

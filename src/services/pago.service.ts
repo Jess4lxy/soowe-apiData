@@ -29,8 +29,8 @@ class PaymentService {
 
     public async createPayment(data: PagoSQL): Promise<PagoSQL> {
         try {
-            if (data.solicitud_id) {
-                const solicitud = await AppDataSource.getRepository(SolicitudSQL).findOneBy({ solicitud_id: data.solicitud_id });
+            if (data.solicitud && data.solicitud.solicitud_id) {
+                const solicitud = await AppDataSource.getRepository(SolicitudSQL).findOneBy({ solicitud_id: data.solicitud?.solicitud_id });
                 if (!solicitud) {
                     throw new Error('Solicitud not found');
                 }
@@ -60,7 +60,18 @@ class PaymentService {
         }
     }
 
-    // delete payment will be added later
+    public async deletePayment(id: number): Promise<boolean> {
+        try {
+            const payment = await AppDataSource.getRepository(PagoSQL).findOneBy({ pago_id: id });
+            if (!payment) return false;
+
+            await AppDataSource.getRepository(PagoSQL).update({ pago_id: id }, { activo: false })
+            return true;
+        } catch (error) {
+            console.error('Error deleting payment:', error);
+            throw error;
+        }
+    }
 }
 
 export default new PaymentService();

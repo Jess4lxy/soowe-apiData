@@ -20,6 +20,7 @@ export class AuthAdminService {
                 .createQueryBuilder('usuario_admin')
                 .leftJoinAndSelect('usuario_admin.organizacion', 'organizacion')
                 .where('usuario_admin.correo = :correo', { correo })
+                .andWhere('usuario_admin.activo = true')
                 .getOne();
         } catch (error) {
             console.error(`Error fetching administrador with email ${correo}:`, error);
@@ -31,12 +32,15 @@ export class AuthAdminService {
         try {
             const administrador = await this.getByEmail(correo);
             if (!administrador) {
-                throw new Error('theres no administrator with the given email');
+                throw new Error('No se encontró un administrador con el correo proporcionado');
             }
 
+            if (!administrador.contrasena) {
+                throw new Error('Ingrese la contraseña');
+            }
             const validPassword = await bcryptjs.compare(contrasena, administrador.contrasena);
             if (!validPassword) {
-                throw new Error('Incorrect password');
+                throw new Error('Contraseña incorrecta');
             }
 
             const token = jwt.sign(

@@ -17,6 +17,7 @@ export class CategoriaService {
             return await this.categoriaRepository
                 .createQueryBuilder('categoria')
                 .leftJoinAndSelect('categoria.servicios', 'servicio')
+                .where('categoria.activo = :activo', { activo: true })
                 .getMany();
         } catch (error) {
             console.error('Error fetching all categorias:', error);
@@ -30,6 +31,7 @@ export class CategoriaService {
                 .createQueryBuilder('categoria')
                 .leftJoinAndSelect('categoria.servicios', 'servicio')
                 .where('categoria.categoria_id = :id', { id })
+                .andWhere('categoria.activo = :activo', { activo: true })
                 .getOne();
         } catch (error) {
             console.error(`Error fetching categoria with ID ${id}:`, error);
@@ -50,10 +52,17 @@ export class CategoriaService {
     async update(id: number, data: Partial<CategoriaSQL>): Promise<CategoriaSQL | null> {
         try {
             const categoria = await this.categoriaRepository.findOne({
-                where: { categoria_id: id }
+                where: { categoria_id: id, activo: true }
             });
             if (!categoria) {
                 return null;
+            }
+
+            if (data.activo === false) {
+                await this.servicioRepository.update(
+                    { categoria: { categoria_id: id }, activo: true },
+                    { activo: false }
+                );
             }
 
             await this.categoriaRepository.update(id, data);
@@ -69,11 +78,16 @@ export class CategoriaService {
     async delete(id: number): Promise<boolean> {
         try {
             const categoria = await this.categoriaRepository.findOne({
-                where: { categoria_id: id }
+                where: { categoria_id: id, activo: true }
             });
             if (!categoria) return false;
 
-            await this.categoriaRepository.delete(id);
+            await this.servicioRepository.update(
+                { categoria: { categoria_id: id }, activo: true },
+                { activo: false }
+            );
+
+            await this.categoriaRepository.update(id, { activo: false });
             return true;
         } catch (error) {
             console.error(`Error deleting categoria with ID ${id}:`, error);
