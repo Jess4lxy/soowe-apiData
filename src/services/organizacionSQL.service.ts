@@ -5,6 +5,7 @@ import Solicitud from '../models/solicitud.model';
 import { SolicitudSQL } from '../models/solicitudSQL.model';
 import { ISolicitud } from '../models/solicitud.model';
 import solicitudService from './solicitud.service';
+import { EnfermeroSQL } from '../models/enfermeroSQL.model';
 
 export class OrganizacionService {
     private organizacionRepository: Repository<OrganizacionSQL>;
@@ -120,6 +121,34 @@ export class OrganizacionService {
                 return solicitudesOrganizacion;
         } catch (error) {
             console.error('Error getting solicitud:', error);
+            throw error;
+        }
+    }
+
+    async getOrganizacionEnfermeros (id: number): Promise<any> {
+        try {
+            const organizacion = await this.organizacionRepository.findOne({
+                where: { organizacion_id: id },
+                relations: ['enfermeros']
+            });
+
+            return organizacion?.enfermeros?.map(enfermero => {
+                return {
+                    enfermero_id: enfermero.enfermero_id,
+                    nombre: enfermero.nombre,
+                    apellido: enfermero.apellido,
+                    especialidad: enfermero.especialidad,
+                    telefono: enfermero.telefono,
+                    correo: enfermero.correo,
+                    disponibilidad: enfermero.disponibilidad,
+                    fecha_creacion: enfermero.fecha_creacion,
+                    fecha_modificacion: enfermero.fecha_modificacion,
+                    foto_perfil: enfermero.foto_perfil,
+                    activo: enfermero.activo
+                };
+            });
+        } catch (error) {
+            console.error('Error getting enfermeros:', error);
             throw error;
         }
     }

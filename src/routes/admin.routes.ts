@@ -34,6 +34,7 @@ adminRouter.get('/organizaciones/:id', asyncHandler(organizacionController.getOr
 adminRouter.put('/organizaciones/:id', [...validateOrganizacionRules, validateOrganizacion], asyncHandler(organizacionController.updateOrganizacion.bind(organizacionController)));
 adminRouter.patch('/organizaciones/:id', asyncHandler(organizacionController.deleteOrganizacion.bind(organizacionController)));
 adminRouter.get('/organizaciones/:id/solicitudes', asyncHandler(organizacionController.getOrganizacionSolicitudes.bind(organizacionController)));
+adminRouter.get('/organizaciones/:id/enfermeros', asyncHandler(organizacionController.getOrganizacionEnfermeros.bind(organizacionController)));
 
 // administradores routes
 adminRouter.get('/administradores', asyncHandler(AdministradorController.getAllAdmins.bind(AdministradorController)));

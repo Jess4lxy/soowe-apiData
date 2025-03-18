@@ -80,6 +80,16 @@ export class OrganizacionController {
             res.status(500).json({ message: 'Error fetching organization solicitudes', error });
         }
     }
+
+    public async getOrganizacionEnfermeros(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { id } = req.params;
+            const enfermeros = await this.organizacionService.getOrganizacionEnfermeros(Number(id));
+            res.json(enfermeros);
+        } catch (error) {
+            res.status(500).json({ message: 'Error fetching organization enfermeros', error });
+        }
+    }
 }
 
 export default new OrganizacionController();
