@@ -164,7 +164,7 @@ class EnfermeroService {
     }
 
     // Delete an enfermero from both databases
-    public async deleteEnfermero(id: string): Promise<void> {
+    public async deleteEnfermero(id: number): Promise<void> {
         try {
             // delete in MongoDB
             const enfermeroMongo = await Enfermero.findByIdAndUpdate (id, { activo: false });

@@ -72,7 +72,7 @@ class EnfermeroController {
 
     public async deleteEnfermero(req: Request, res: Response): Promise<void> {
         try {
-            await EnfermeroService.deleteEnfermero(req.params.id);
+            await EnfermeroService.deleteEnfermero(Number(req.params.id));
             res.status(200).json({ message: 'Enfermero deleted successfully' });
         } catch (error) {
             res.status(500).json({ error: 'Error deleting the enfermero' });
