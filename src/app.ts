@@ -17,10 +17,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 // Auth & public routes
-app.use('/', authRouter, apiRouter);
+app.use('/', authRouter);
 
 // API Routes
-app.use('/api', authMiddleware);
+app.use('/api', authMiddleware, apiRouter);
 
 // Default Route
 app.get('/', (req: Request, res: Response) => {
