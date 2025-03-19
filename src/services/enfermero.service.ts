@@ -167,7 +167,7 @@ class EnfermeroService {
     public async deleteEnfermero(id: number): Promise<void> {
         try {
             // delete in MongoDB
-            const enfermeroMongo = await Enfermero.findByIdAndUpdate (id, { activo: false });
+            const enfermeroMongo = await Enfermero.findOneAndUpdate({ enfermero_id: id }, { activo: false });
 
             if (!enfermeroMongo) {
                 throw new Error('Enfermero not found in MongoDB');
@@ -176,7 +176,7 @@ class EnfermeroService {
             // Delete from PostgreSQL
             const entityManager = AppDataSource.manager;
             const enfermeroSQL = await entityManager.findOne(EnfermeroSQL, {
-                where: { correo: enfermeroMongo.correo }
+                where: { enfermero_id: id }
             });
 
             if (enfermeroSQL) {
