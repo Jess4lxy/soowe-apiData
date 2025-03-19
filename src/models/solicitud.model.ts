@@ -13,6 +13,9 @@ export interface ISolicitud extends Document {
     comentarios?: string;
     ubicacion: string;
     activo: boolean;
+    codigo_confirmacion?: string; // Código generado para el usuario
+    confirmado_enfermero: boolean; // Confirma que el enfermero llegó
+    confirmado_usuario: boolean; // Confirma que el usuario recibió el servicio
 }
 
 const solicitudSchema: Schema<ISolicitud> = new Schema({
@@ -27,7 +30,10 @@ const solicitudSchema: Schema<ISolicitud> = new Schema({
     pg_solicitud_id: { type: Number, required: true, unique: true },
     comentarios: { type: String, default: '' },
     ubicacion: { type: String, required: true },
-    activo: { type: Boolean, default: true }
+    activo: { type: Boolean, default: true },
+    codigo_confirmacion: { type: String, required: false },
+    confirmado_enfermero: { type: Boolean, default: false },
+    confirmado_usuario: { type: Boolean, default: false },
 });
 
 const Solicitud = mongoose.model<ISolicitud>('Solicitudes', solicitudSchema, 'Solicitudes');
