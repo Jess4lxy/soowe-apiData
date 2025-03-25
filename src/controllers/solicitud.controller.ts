@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import solicitudService from "../services/solicitud.service";
+import Seguimiento from "../models/seguimientos.model";
 
 export class SolicitudController {
     async getSolicitudes(req: Request, res: Response, next: NextFunction) {
@@ -67,6 +68,17 @@ export class SolicitudController {
             res.json({ message: "Solicitud deleted successfully" });
         } catch (error) {
             res.status(500).json({ message: "Error deleting solicitud", error });
+        }
+    }
+
+    async updateSolicitudStatus(req: Request, res: Response, next: NextFunction) {
+        try {
+            const solicitudId = Number(req.params.id);
+            const solicitudStatus = req.body.estado;
+            const seguimiento = await solicitudService.updateSolicitudStatus(solicitudId, solicitudStatus);
+            res.json({ message: "Solicitud updated successfully", solicitudId, seguimiento});
+        } catch (error) {
+            res.status(500).json({ message: "Error updating solicitud", error });
         }
     }
 }

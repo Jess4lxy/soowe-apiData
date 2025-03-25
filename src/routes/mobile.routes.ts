@@ -30,6 +30,7 @@ mobileRouter.post('/solicitudes', [...validateSolicitudRules, validateSolicitud]
 mobileRouter.get('/solicitudes/:id', asyncHandler(solicitudController.getSolicitudById.bind(solicitudController)));
 mobileRouter.patch('/solicitudes/id', asyncHandler(solicitudController.deleteSolicitud.bind(solicitudController)));
 mobileRouter.get('/solicitudes/:id/pagos', asyncHandler(solicitudController.getSolicitudPayments.bind(solicitudController)));
+mobileRouter.patch('/solicitudes/:id/estado', asyncHandler(solicitudController.updateSolicitudStatus.bind(solicitudController)));
 
 // Mobile App Routes for Pagos
 mobileRouter.get('/pagos', asyncHandler(PaymentController.getAllPayments.bind(solicitudController)));

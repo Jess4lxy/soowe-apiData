@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ISeguimiento extends Document {
     solicitud_id: mongoose.Types.ObjectId;
-    estado: string;         // Estados: "En camino", "Llegó", "Servicio en curso", "Finalizado"
+    estado: string;         // Estados: "en camino", "he llegado", "servicio en curso", "finalizado"
     ubicacion_actual?: { lat: number; lng: number }; // para ubicacion en tiempo real
     codigo_confirmacion?: string;
     fecha_estado: Date;

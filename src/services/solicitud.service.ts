@@ -8,6 +8,8 @@ import { IEnfermero } from '../models/enfermero.model';
 import { OrganizacionSQL } from '../models/organizacionSQL.model';
 import enfermeroService from './enfermero.service';
 import { EnfermeroSQL } from '../models/enfermeroSQL.model';
+import { generateConfirmationCode } from '../utils/randomCode';
+import Seguimiento from '../models/seguimientos.model';
 
 class SolicitudService {
     private async createSolicitudSQL(servicioId: number): Promise<SolicitudSQL> {
@@ -226,6 +228,41 @@ class SolicitudService {
             }
         } catch (error) {
             console.error('Error deleting solicitud:', error);
+            throw error;
+        }
+    }
+
+    public async updateSolicitudStatus(solicitudId: number, status: string): Promise<any> {
+        try {
+            const solicitudMongo = await Solicitud.findOne({ pg_solicitud_id : solicitudId });
+            if (!solicitudMongo) {
+                throw new Error('Solicitud no encontrada en MongoDB');
+            }
+
+            solicitudMongo.estado = status;
+
+            let confirmationCode = solicitudMongo.codigo_confirmacion;
+            if (status === 'en camino' && !confirmationCode) {
+                confirmationCode = generateConfirmationCode();
+                solicitudMongo.codigo_confirmacion = confirmationCode;
+            }
+
+            await solicitudMongo.save();
+
+            const seguimiento = new Seguimiento({
+                solicitud_id: solicitudMongo._id,
+                estado: status,
+                codigo_confirmacion: confirmationCode,
+                fecha_estado: new Date()
+            });
+
+            await seguimiento.save();
+
+            //TODO: notificate the user
+
+            return seguimiento;
+        } catch (error) {
+            console.error('Error updating solicitud status:', error);
             throw error;
         }
     }
