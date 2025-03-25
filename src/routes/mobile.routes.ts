@@ -32,10 +32,11 @@ mobileRouter.get('/solicitudes/:id', asyncHandler(solicitudController.getSolicit
 mobileRouter.patch('/solicitudes/id', asyncHandler(solicitudController.deleteSolicitud.bind(solicitudController)));
 mobileRouter.get('/solicitudes/:id/pagos', asyncHandler(solicitudController.getSolicitudPayments.bind(solicitudController)));
 mobileRouter.patch('/solicitudes/:id/estado', asyncHandler(solicitudController.updateSolicitudStatus.bind(solicitudController)));
+mobileRouter.get('/solicitudes/:id/seguimiento', asyncHandler(solicitudController.getSeguimientoSolicitud.bind(solicitudController)));
 
 // Mobile App Routes for Seguimiento (in Solicitudes)
-mobileRouter.get('/seguimiento/:id/ubicacion', asyncHandler(solicitudController.getUbicacionEnfermero.bind(solicitudController)));
-mobileRouter.patch('/solicitudes/:id/ubicacion', asyncHandler(solicitudController.updateEnfermeroUbicacion.bind(solicitudController)));
+mobileRouter.get('/seguimientos/:id/ubicacion', asyncHandler(solicitudController.getUbicacionEnfermero.bind(solicitudController)));
+mobileRouter.patch('/seguimientos/:id/ubicacion', asyncHandler(solicitudController.updateEnfermeroUbicacion.bind(solicitudController)));
 
 // Mobile App Routes for Pagos
 mobileRouter.get('/pagos', asyncHandler(PaymentController.getAllPayments.bind(solicitudController)));

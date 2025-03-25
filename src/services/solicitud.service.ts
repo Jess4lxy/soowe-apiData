@@ -243,31 +243,54 @@ class SolicitudService {
 
             solicitudMongo.estado = status;
 
-            let confirmationCode = solicitudMongo.codigo_confirmacion;
-            if (status === 'en camino' && !confirmationCode) {
-                confirmationCode = generateConfirmationCode();
-                solicitudMongo.codigo_confirmacion = confirmationCode;
+            if (status === 'en camino' && !solicitudMongo.codigo_confirmacion) {
+                solicitudMongo.codigo_confirmacion = generateConfirmationCode();
             }
 
             await solicitudMongo.save();
 
-            const seguimiento = new Seguimiento({
-                solicitud_id: solicitudMongo._id,
-                estado: status,
-                codigo_confirmacion: confirmationCode,
-                fecha_estado: new Date()
-            });
+            const seguimiento = await this.getSeguimientoSolicitud(solicitudId);
 
-            await seguimiento.save();
+            if (seguimiento) {
+                await seguimiento.updateOne({
+                    estado: status,
+                    codigo_confirmacion: solicitudMongo.codigo_confirmacion,
+                    fecha_estado: new Date()
+                });
+            } else {
+                const nuevoSeguimiento = new Seguimiento({
+                    solicitud_id: solicitudMongo._id,
+                    estado: status,
+                    codigo_confirmacion: solicitudMongo.codigo_confirmacion,
+                    fecha_estado: new Date()
+                });
+
+                await nuevoSeguimiento.save();
+            }
 
             //TODO: notificate the user
 
             // emit event with websocket
-            io.emit(`solicitud:${solicitudId}`, {estado: status, codigo_confirmacion: confirmationCode });
+            io.emit(`solicitud:${solicitudId}`, {estado: status, codigo_confirmacion: solicitudMongo.codigo_confirmacion });
+
+            return { solicitudId, status, codigo_confirmacion: solicitudMongo.codigo_confirmacion };
+        } catch (error) {
+            console.error('Error updating solicitud status:', error);
+            throw error;
+        }
+    }
+
+    public async getSeguimientoSolicitud(solicitudId: number): Promise<any> {
+        try {
+            const seguimiento = await Seguimiento.find({ solicitud_id: solicitudId })
+
+            if (!seguimiento) {
+                return null;
+            }
 
             return seguimiento;
         } catch (error) {
-            console.error('Error updating solicitud status:', error);
+            console.error('Error getting seguimiento in MongoDB:', error);
             throw error;
         }
     }

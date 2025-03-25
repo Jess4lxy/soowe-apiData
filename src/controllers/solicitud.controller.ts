@@ -82,7 +82,17 @@ export class SolicitudController {
         }
     }
 
-    public async getUbicacionEnfermero(req: Request, res: Response): Promise<void> {
+    async getSeguimientoSolicitud(req: Request, res: Response, next: NextFunction) {
+        try {
+            const solicitudId = Number(req.params.id);
+            const seguimientos = await solicitudService.getSeguimientoSolicitud(solicitudId);
+            res.json(seguimientos);
+        } catch (error) {
+            res.status(500).json({ message: "Error obteniendo seguimientos", error });
+        }
+    }
+
+    public async getUbicacionEnfermero(req: Request, res: Response) {
         try {
             const solicitudId = Number(req.params.id);
             const ubicacion = await solicitudService.getUbicacionEnfermero(solicitudId);
@@ -98,7 +108,7 @@ export class SolicitudController {
         }
     }
 
-    async updateEnfermeroUbicacion(req: Request, res: Response): Promise<void> {
+    async updateEnfermeroUbicacion(req: Request, res: Response) {
         try {
             const solicitudId = Number(req.params.id);
             const { lat, lng } = req.body;
