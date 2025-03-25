@@ -10,6 +10,7 @@ import Solicitud from '../models/solicitud.model';
 import { ISolicitud } from '../models/solicitud.model';
 import { SolicitudSQL } from '../models/solicitudSQL.model';
 import { In } from 'typeorm';
+import Seguimiento from '../models/seguimientos.model';
 
 class EnfermeroService {
     private async saveEnfermeroPostgres(data: IEnfermero): Promise<EnfermeroSQL> {
@@ -230,6 +231,7 @@ class EnfermeroService {
             throw error;
         }
     }
+
 }
 
 export default new EnfermeroService();

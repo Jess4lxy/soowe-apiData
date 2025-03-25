@@ -10,6 +10,7 @@ import enfermeroService from './enfermero.service';
 import { EnfermeroSQL } from '../models/enfermeroSQL.model';
 import { generateConfirmationCode } from '../utils/randomCode';
 import Seguimiento from '../models/seguimientos.model';
+import { io } from '../app';
 
 class SolicitudService {
     private async createSolicitudSQL(servicioId: number): Promise<SolicitudSQL> {
@@ -232,6 +233,7 @@ class SolicitudService {
         }
     }
 
+    // only use this route to update the status of the request if the nurse already accepted
     public async updateSolicitudStatus(solicitudId: number, status: string): Promise<any> {
         try {
             const solicitudMongo = await Solicitud.findOne({ pg_solicitud_id : solicitudId });
@@ -260,9 +262,45 @@ class SolicitudService {
 
             //TODO: notificate the user
 
+            // emit event with websocket
+            io.emit(`solicitud:${solicitudId}`, {estado: status, codigo_confirmacion: confirmationCode });
+
             return seguimiento;
         } catch (error) {
             console.error('Error updating solicitud status:', error);
+            throw error;
+        }
+    }
+
+    public async getUbicacionEnfermero(solicitudId: number): Promise<any> {
+        try {
+            const seguimiento = await Seguimiento.findOne({ solicitud_id: solicitudId })
+                .sort({ fecha_estado: -1 })
+    
+            if (!seguimiento || !seguimiento.ubicacion_actual) {
+                return null;
+            }
+    
+            return seguimiento.ubicacion_actual;
+        } catch (error) {
+            console.error('Error getting the seguimiento in MongoDB:', error);
+            throw error;
+        }
+    }
+
+    public async updateEnfermeroUbicacion(solicitud_id: number, lat: number, lng: number): Promise<any> {
+        try {
+            const seguimiento = await Seguimiento.findOne({ solicitud_id: solicitud_id });
+            if (!seguimiento) {
+                throw new Error('Seguimiento no encontrado');
+            }
+
+            seguimiento.ubicacion_actual = { lat, lng };
+            await seguimiento.save();
+
+            return seguimiento;
+        } catch (error) {
+            console.error('Error updating the enfermero ubicacion:', error);
             throw error;
         }
     }

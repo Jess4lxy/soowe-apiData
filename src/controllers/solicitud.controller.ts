@@ -81,6 +81,38 @@ export class SolicitudController {
             res.status(500).json({ message: "Error updating solicitud", error });
         }
     }
+
+    public async getUbicacionEnfermero(req: Request, res: Response): Promise<void> {
+        try {
+            const solicitudId = Number(req.params.id);
+            const ubicacion = await solicitudService.getUbicacionEnfermero(solicitudId);
+
+            if (!ubicacion) {
+                res.status(404).json({ message: "Ubicación no disponible" });
+                return;
+            }
+
+            res.json(ubicacion);
+        } catch (error) {
+            res.status(500).json({ message: "Error obteniendo ubicación", error });
+        }
+    }
+
+    async updateEnfermeroUbicacion(req: Request, res: Response): Promise<void> {
+        try {
+            const solicitudId = Number(req.params.id);
+            const { lat, lng } = req.body;
+
+            if (!lat || !lng) {
+                res.status(400).json({ message: "Latitud y longitud son requeridos" });
+            }
+
+            const seguimiento = await solicitudService.updateEnfermeroUbicacion(solicitudId, lat, lng);
+            res.json({ message: "Ubicación actualizada", seguimiento });
+        } catch (error) {
+            res.status(500).json({ message: "Error actualizando ubicación", error });
+        }
+    }
 }
 
 export default new SolicitudController();

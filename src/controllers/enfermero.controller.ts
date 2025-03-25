@@ -1,5 +1,6 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import EnfermeroService from '../services/enfermero.service';
+import enfermeroService from '../services/enfermero.service';
 
 class EnfermeroController {
     public async createEnfermero(req: Request, res: Response): Promise<void> {

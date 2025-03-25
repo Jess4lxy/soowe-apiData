@@ -1,4 +1,4 @@
-import app from './app';
+import { server } from './app';
 import connectMongo from './config/mongo';
 import { AppDataSource } from './config/data-source'; // PostgreSQL
 
@@ -26,7 +26,7 @@ const PORT = process.env.PORT || 3015;
 
         // Start server only if both connections are successful
         console.log('Database connections verified.');
-        app.listen(PORT, () => {
+        server.listen(PORT, () => {
             console.log(`Server running on http://localhost:${PORT}`);
         });
 
