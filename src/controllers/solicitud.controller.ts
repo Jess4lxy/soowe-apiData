@@ -123,6 +123,52 @@ export class SolicitudController {
             res.status(500).json({ message: "Error actualizando ubicación", error });
         }
     }
+
+    public async getConfirmationCode(req: Request, res: Response) {
+        try {
+            const solicitudId = Number(req.params.id);
+            const confirmationCode = await solicitudService.getConfirmationCode(solicitudId);
+            res.json({ message: "Código de confirmación:", confirmationCode });
+        } catch (error) {
+            res.status(500).json({ message: "Error obteniendo el codigo de confirmacion", error });
+        }
+    }
+
+    public async validateConfirmationCode(req: Request, res: Response) {
+        try {
+            const solicitudId = Number(req.params.id);
+            const confirmationCode = req.body.confirmationCode;
+            const isValid = await solicitudService.validateConfirmationCode(solicitudId, confirmationCode);
+
+            if (!isValid) {
+                res.status(401).json({ message: "Código de confirmación inválido" });
+                return;
+            }
+            res.json({ message: "Código de confirmación válido" });
+        } catch (error) {
+            res.status(500).json({ message: "Error validando el código de confirmación", error });
+        }
+    }
+
+    public async finishServiceEnfermero(req: Request, res: Response) {
+        try {
+            const solicitudId = Number(req.params.id);
+            const seguimiento = await solicitudService.finishServiceEnfermero(solicitudId);
+            res.json({ message: "Servicio finalizado", seguimiento });
+        } catch (error) {
+            res.status(500).json({ message: "Error finalizando el servicio", error });
+        }
+    }
+
+    public async finishServiceUsuario(req: Request, res: Response) {
+        try {
+            const solicitudId = Number(req.params.id);
+            const seguimiento = await solicitudService.finishServiceUsuario(solicitudId);
+            res.json({ message: "Servicio finalizado", seguimiento });
+        } catch (error) {
+            res.status(500).json({ message: "Error finalizando el servicio para el usuario", error });
+        }
+    }
 }
 
 export default new SolicitudController();

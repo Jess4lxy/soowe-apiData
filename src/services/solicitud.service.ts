@@ -327,6 +327,84 @@ class SolicitudService {
             throw error;
         }
     }
+
+    public async getConfirmationCode(solicitud_id: number): Promise<any> {
+        try {
+            const solicitud = await Solicitud.findOne({ pg_solicitud_id: solicitud_id });
+            if (!solicitud) {
+                throw new Error('Solicitud no encontrada');
+            }
+
+            return solicitud.codigo_confirmacion;
+        } catch (error) {
+            console.error('Error getting the confirmation code:', error);
+            throw error;
+        }
+    }
+
+    public async validateConfirmationCode(solicitud_id: number, confirmationCode: string): Promise<boolean> {
+        try {
+            const solicitud = await Solicitud.findOne({ pg_solicitud_id: solicitud_id });
+            if (!solicitud) {
+                throw new Error('Solicitud no encontrada');
+            }
+
+            if (solicitud.codigo_confirmacion!== confirmationCode) {
+                throw new Error('El código de confirmación no coincide');
+            }
+
+            this.updateSolicitudStatus(solicitud_id, 'servicio en curso');
+
+            return true;
+        } catch (error) {
+            console.error('Error validating the confirmation code:', error);
+            throw error;
+        }
+    }
+
+    public async finishServiceEnfermero(solicitudId: number): Promise<boolean> {
+        try {
+            const solicitud = await Solicitud.findOne({ pg_solicitud_id: solicitudId });
+
+            if (!solicitud) {
+                throw new Error('Solicitud no encontrada');
+            }
+
+            solicitud.confirmado_enfermero = true;
+            await solicitud.save();
+
+            if (solicitud.confirmado_usuario) {
+                await this.updateSolicitudStatus(solicitudId, 'finalizado');
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error finalizando el servicio del enfermero:', error);
+            throw error;
+        }
+    }
+
+    public async finishServiceUsuario(solicitudId: number): Promise<boolean> {
+        try {
+            const solicitud = await Solicitud.findOne({ pg_solicitud_id: solicitudId });
+
+            if (!solicitud) {
+                throw new Error('Solicitud no encontrada');
+            }
+
+            solicitud.confirmado_usuario = true;
+            await solicitud.save();
+
+            if (solicitud.confirmado_enfermero) {
+                await this.updateSolicitudStatus(solicitudId, 'finalizado');
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error finalizando el servicio por el usuario:', error);
+            throw error;
+        }
+    }
 }
 
 export default new SolicitudService();
