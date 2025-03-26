@@ -42,6 +42,7 @@ adminRouter.post('/administradores', [...validateAdministradorRules, validateAdm
 adminRouter.get('/administradores/:id', asyncHandler(AdministradorController.getAdminById.bind(AdministradorController)));
 adminRouter.put('/administradores/:id', [...validateAdministradorRules, validateAdministrador], asyncHandler(AdministradorController.updateAdmin.bind(AdministradorController)));
 adminRouter.patch('/administradores/:id', asyncHandler(AdministradorController.deleteAdmin.bind(AdministradorController)));
+adminRouter.patch('/administradores/:id/cambiar-contrasena', asyncHandler(AdministradorController.changePassword.bind(AdministradorController)));
 
 // categorias routes
 adminRouter.get('/categorias', asyncHandler(categoriaController.getAllCategorias.bind(categoriaController)));

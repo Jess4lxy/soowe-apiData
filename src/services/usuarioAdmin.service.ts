@@ -99,4 +99,33 @@ export class UsuarioAdminService {
             throw error;
         }
     }
+
+    async changePassword(id: number, oldPassword: string, newPassword: string): Promise<boolean> {
+        try {
+            const admin = await this.usuarioAdminRepository.findOne({
+                where: { usuario_admin_id: id }
+            });
+
+            if (!admin) {
+                throw new Error('Administrador not found');
+            }
+
+            if (!admin.contrasena) {
+                throw new Error('Password is not set for this user');
+            }
+
+            const isMatch = await bcryptjs.compare(oldPassword, admin.contrasena);
+            if (!isMatch) {
+                throw new Error('Incorrect old password');
+            }
+
+            const hashedPassword = await bcryptjs.hash(newPassword, 14);
+            admin.contrasena = hashedPassword;
+            await this.usuarioAdminRepository.save(admin);
+            return true;
+        } catch (error) {
+            console.error(`Error changing password for administrador with ID ${id}:`, error);
+            throw error;
+        }
+    }
 }

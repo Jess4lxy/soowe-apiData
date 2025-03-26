@@ -232,6 +232,33 @@ class EnfermeroService {
         }
     }
 
+    async changePassword(id: string, oldPassword: string, newPassword: string): Promise<boolean> {
+        try {
+            const user = await this.getEnfermeroByIdMongo(id);
+
+            if (!user) {
+                throw new Error('Nurse not found');
+            }
+
+            if (!user.contrasena) {
+                throw new Error('Password is not set for this nurse');
+            }
+
+            const isMatch = await bcryptjs.compare(oldPassword, user.contrasena);
+            if (!isMatch) {
+                throw new Error('Incorrect old password');
+            }
+
+            const hashedPassword = await bcryptjs.hash(newPassword, 14);
+            user.contrasena = hashedPassword;
+            await Enfermero.findByIdAndUpdate(user.id, user)
+            return true;
+        } catch (error) {
+            console.error(`Error changing password for nurse with ID ${id}:`, error);
+            throw error;
+        }
+    }
+
 }
 
 export default new EnfermeroService();

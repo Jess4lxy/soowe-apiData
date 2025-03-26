@@ -97,6 +97,23 @@ export class UserController {
             res.status(500).json({ message: "Error fetching solicitudes", error });
         }
     }
+
+    async changePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const userId = req.params.id;
+            const { oldPassword, newPassword } = req.body;
+
+            const changedPassword = await UsuarioService.changePassword(userId, oldPassword, newPassword);
+
+            if (!changedPassword) {
+                res.status(401).json({ message: "Invalid old password" });
+                return;
+            }
+            res.json({ message: "Password changed successfully" });
+        } catch (error) {
+            res.status(500).json({ message: "Error changing password", error });
+        }
+    }
 }
 
 export default new UserController();

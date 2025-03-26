@@ -112,6 +112,33 @@ class UsuarioService {
             throw error;
         }
     }
+
+    async changePassword(id: string, oldPassword: string, newPassword: string): Promise<boolean> {
+        try {
+            const user = await this.getUserById(id);
+
+            if (!user) {
+                throw new Error('User not found');
+            }
+
+            if (!user.contrasena) {
+                throw new Error('Password is not set for this user');
+            }
+
+            const isMatch = await bcryptjs.compare(oldPassword, user.contrasena);
+            if (!isMatch) {
+                throw new Error('Incorrect old password');
+            }
+
+            const hashedPassword = await bcryptjs.hash(newPassword, 14);
+            user.contrasena = hashedPassword;
+            await Usuario.findByIdAndUpdate(user.id, user)
+            return true;
+        } catch (error) {
+            console.error(`Error changing password for user with ID ${id}:`, error);
+            throw error;
+        }
+    }
 }
 
 export default new UsuarioService;

@@ -76,7 +76,24 @@ export class usuarioAdminController {
             res.status(200).json({ message: 'Administrador eliminado correctamente' });
         } catch (error) {
             res.status(500).json({ message: 'Error deleting admin', error });
+        }
     }
+
+    public async changePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { id } = req.params;
+            const { oldPassword, newPassword } = req.body;
+
+            const changedPassword = await this.usuarioAdminService.changePassword(Number(id), oldPassword, newPassword);
+
+            if (!changedPassword) {
+                res.status(401).json({ message: 'Contraseña incorrecta' });
+                return;
+            }
+            res.json({ message: 'Contraseña cambiada correctamente' });
+        } catch (error) {
+            res.status(500).json({ message: 'Error cambiando contraseña', error });
+        }
     }
 }
 

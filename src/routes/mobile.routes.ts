@@ -23,6 +23,7 @@ const mobileRouter = Router();
 mobileRouter.get('/enfermeros', asyncHandler(EnfermeroController.getEnfermerosMongo.bind(EnfermeroController)));
 mobileRouter.get('/enfermeros/:id', asyncHandler(EnfermeroController.getEnfermeroByIdMongo.bind(EnfermeroController)));
 mobileRouter.get('/enfermeros/:id/solicitudes', asyncHandler(EnfermeroController.getSolicitudesEnfermero.bind(EnfermeroController)));
+mobileRouter.patch('/enfermeros/:id/cambiar-contrasena', asyncHandler(EnfermeroController.changePassword.bind(EnfermeroController)));
 
 
 // Mobile App Routes for Solicitudes
@@ -55,6 +56,7 @@ mobileRouter.post('/usuarios', [...validateUsuarioRules, validateUsuario], async
 mobileRouter.put('/usuarios/:id', [...validateUsuarioRules, validateUsuario], asyncHandler(UserController.updateUser.bind(UserController)));
 mobileRouter.patch('/usuarios/:id', asyncHandler(UserController.deleteUser.bind(UserController)));
 mobileRouter.get('/usuarios/:id', asyncHandler(UserController.getUserById.bind(UserController)));
+mobileRouter.patch('/usuarios/:id/cambiar-contrasena', asyncHandler(UserController.changePassword.bind(UserController)));
 mobileRouter.get('/usuarios/:id/pacientes', asyncHandler(UserController.getUserPacientes.bind(UserController)));
 mobileRouter.get('/usuarios/:id/solicitudes', asyncHandler(UserController.getUserSolicitudes.bind(UserController)));
 mobileRouter.put('/usuarios/:id/profile/upload-picture', upload.single('foto_perfil'), asyncHandler(UserController.uploadProfilePicture.bind(UserController)));
