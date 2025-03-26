@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node dist/server.js",
     "dev": "ts-node src/server.ts",
-    "build": "tsc"
+    "build": "tsc && copyfiles -u 1 src/files/words.json dist/files/"
   },
   "parser": "@typescript-eslint/parser",
   "plugins": [
@@ -51,6 +51,7 @@
     "@types/pg": "^8.11.11",
     "@typescript-eslint/eslint-plugin": "^8.21.0",
     "@typescript-eslint/parser": "^8.21.0",
+    "copyfiles": "^2.4.1",
     "eslint": "^9.19.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",
