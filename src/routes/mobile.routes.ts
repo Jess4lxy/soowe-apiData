@@ -35,8 +35,8 @@ mobileRouter.patch('/solicitudes/:id/estado', asyncHandler(solicitudController.u
 mobileRouter.get('/solicitudes/:id/seguimiento', asyncHandler(solicitudController.getSeguimientoSolicitud.bind(solicitudController)));
 mobileRouter.get('/solicitudes/:id/codigo-confirmacion', asyncHandler(solicitudController.getConfirmationCode.bind(solicitudController)));
 mobileRouter.post('/solicitudes/:id/validar-codigo', asyncHandler(solicitudController.validateConfirmationCode.bind(solicitudController)));
-mobileRouter.get('/solicitudes/:id/finalizar-enfermero', asyncHandler(solicitudController.finishServiceEnfermero.bind(solicitudController)));
-mobileRouter.get('/solicitudes/:id/finalizar-usuario', asyncHandler(solicitudController.finishServiceUsuario.bind(solicitudController)));
+mobileRouter.patch('/solicitudes/:id/finalizar-enfermero', asyncHandler(solicitudController.finishServiceEnfermero.bind(solicitudController)));
+mobileRouter.patch('/solicitudes/:id/finalizar-usuario', asyncHandler(solicitudController.finishServiceUsuario.bind(solicitudController)));
 
 // Mobile App Routes for Seguimiento (in Solicitudes)
 mobileRouter.get('/seguimientos/:id/ubicacion', asyncHandler(solicitudController.getUbicacionEnfermero.bind(solicitudController)));
