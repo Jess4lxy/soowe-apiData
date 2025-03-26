@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node dist/server.js",
     "dev": "ts-node src/server.ts",
-    "build": "tsc && copyfiles -u 1 src/files/words.json dist/files/"
+    "build": "tsc && copyfiles -u 2 src/files/words.json dist/"
   },
   "parser": "@typescript-eslint/parser",
   "plugins": [
