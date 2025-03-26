@@ -40,7 +40,7 @@ export class UsuarioAdminService {
 
     async create(data: Partial<UsuarioSQL>, organizacion_id: number): Promise<UsuarioSQL> {
         try {
-            const { correo, contrasena } = data;
+            const { nombre, apellido, telefono, correo, contrasena } = data;
             if (!contrasena) {
                 throw new Error('The password is required');
             }
@@ -54,6 +54,9 @@ export class UsuarioAdminService {
             }
 
             const admin = this.usuarioAdminRepository.create({
+                nombre,
+                apellido,
+                telefono,
                 correo,
                 contrasena: hashedPassword,
                 organizacion,
