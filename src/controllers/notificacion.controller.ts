@@ -5,10 +5,10 @@ class NotificationController {
 
   // get a single receptor (nurse or user) notifications
   async getNotificationsByReceptor(req: Request, res: Response): Promise<void> {
-    const { receptorId } = req.params;
+    const { id } = req.params;
 
     try {
-      const notifications = await notificationService.getNotificationsByReceptor(receptorId);
+      const notifications = await notificationService.getNotificationsByReceptor(id);
       res.status(200).json(notifications);
       return;
     } catch (error) {
