@@ -60,6 +60,7 @@ mobileRouter.patch('/usuarios/:id/cambiar-contrasena', asyncHandler(UserControll
 mobileRouter.get('/usuarios/:id/pacientes', asyncHandler(UserController.getUserPacientes.bind(UserController)));
 mobileRouter.get('/usuarios/:id/solicitudes', asyncHandler(UserController.getUserSolicitudes.bind(UserController)));
 mobileRouter.put('/usuarios/:id/profile/upload-picture', upload.single('foto_perfil'), asyncHandler(UserController.uploadProfilePicture.bind(UserController)));
+mobileRouter.get('/usuarios/:id/notificaciones/:receptorId', asyncHandler(notificacionController.getNotificationsByReceptor.bind(notificacionController)));
 
 // Mobile App Routes for Pacientes
 mobileRouter.get('/pacientes', asyncHandler(pacientesController.getPacientes.bind(pacientesController)));
@@ -70,7 +71,6 @@ mobileRouter.patch('/pacientes/:id', asyncHandler(pacientesController.deletePaci
 
 // Mobile App Routes for Notificaciones
 mobileRouter.get('/notificaciones/:id', asyncHandler(notificacionController.getNotificationById.bind(notificacionController)));
-mobileRouter.get('/notificaciones/:receptorId', asyncHandler(notificacionController.getNotificationsByReceptor.bind(notificacionController)));
 /**
  * end of router
  */
