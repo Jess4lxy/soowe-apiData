@@ -12,6 +12,7 @@ import serviciosController from '../controllers/servicios.controller';
 import { validateServicio, validateServicioRules } from '../middlewares/validateServicio';
 import solicitudController from '../controllers/solicitud.controller';
 import upload from '../middlewares/uploadMiddleware';
+import notificacionController from '../controllers/notificacion.controller';
 
 const adminRouter = Router();
 
@@ -35,6 +36,7 @@ adminRouter.put('/organizaciones/:id', [...validateOrganizacionRules, validateOr
 adminRouter.patch('/organizaciones/:id', asyncHandler(organizacionController.deleteOrganizacion.bind(organizacionController)));
 adminRouter.get('/organizaciones/:id/solicitudes', asyncHandler(organizacionController.getOrganizacionSolicitudes.bind(organizacionController)));
 adminRouter.get('/organizaciones/:id/enfermeros', asyncHandler(organizacionController.getOrganizacionEnfermeros.bind(organizacionController)));
+adminRouter.get('/organizaciones/:id/notificaciones', asyncHandler(notificacionController.getNotificationsByOrganizacion.bind(notificacionController)));
 
 // administradores routes
 adminRouter.get('/administradores', asyncHandler(AdministradorController.getAllAdmins.bind(AdministradorController)));
@@ -64,6 +66,10 @@ adminRouter.get('/solicitudes/entrantes', asyncHandler(solicitudController.getAl
 adminRouter.get('/solicitudes/:id', asyncHandler(solicitudController.getSolicitudById.bind(solicitudController)));
 adminRouter.get('/solicitudes/:id/pagos', asyncHandler(solicitudController.getSolicitudPayments.bind(solicitudController)));
 adminRouter.put('/solicitudes/:id/enfermero/:enfermeroId', asyncHandler(solicitudController.assignEnfermeroToSolicitud.bind(solicitudController)));
+
+// notificaciones routes
+adminRouter.get('/notificaciones/:id', asyncHandler(notificacionController.getOrgNotificationById.bind(notificacionController)));
+adminRouter.patch('/notificaciones/:id/leida', asyncHandler(notificacionController.markNotificationAsRead.bind(notificacionController)));
 
 /**
  * end of router

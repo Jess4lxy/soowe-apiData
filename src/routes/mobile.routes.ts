@@ -71,6 +71,10 @@ mobileRouter.patch('/pacientes/:id', asyncHandler(pacientesController.deletePaci
 
 // Mobile App Routes for Notificaciones
 mobileRouter.get('/notificaciones/:id', asyncHandler(notificacionController.getNotificationById.bind(notificacionController)));
+mobileRouter.get('/receptor/:id/notificaciones', asyncHandler(notificacionController.getNotificationsByReceptor.bind(notificacionController)));
+mobileRouter.patch('/notificaciones/:id/leida', asyncHandler(notificacionController.markNotificationAsRead.bind(notificacionController)));
+
+
 /**
  * end of router
  */

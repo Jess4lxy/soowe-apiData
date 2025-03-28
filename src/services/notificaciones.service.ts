@@ -1,4 +1,5 @@
 import { Notificacion, INotificacion} from '../models/notificaciones.model';
+import { NotificacionOrganizacion, INotificacionOrg } from '../models/notificacionesOrg.model';
 import { ISolicitud } from '../models/solicitud.model';
 import Solicitud from '../models/solicitud.model';
 
@@ -8,7 +9,7 @@ class notificationService {
     tipoReceptor: 'usuario' | 'enfermero',
     titulo: string,
     contenido: string,
-    estadoAsignacion: 'pendiente' | 'aceptada' | 'rechazada'
+    estadoAsignacion: string
   ): Promise<void> {
     try {
       const newNotification = new Notificacion({
@@ -24,9 +25,28 @@ class notificationService {
     }
   }
 
+  async createOrgNotification(
+    organizacionId: number,
+    titulo: string,
+    contenido: string,
+    estadoAsignacion: string,
+  ): Promise<void> {
+    try{
+      const newNotification = new NotificacionOrganizacion({
+        organizacionId,
+        titulo,
+        contenido,
+        estadoAsignacion,
+      });
+      await newNotification.save();
+    } catch (error) {
+      console.error('Error al crear notificación:', error);
+    }
+  }
+
   async getNotificationsByReceptor(receptorId: string): Promise<INotificacion[]> {
     try {
-      const notifications = await Notificacion.find({ receptorId });
+      const notifications = await Notificacion.find({ receptorId, activo: true });
       return notifications;
     } catch (error) {
       console.error('Error al obtener notificaciones:', error);
@@ -34,9 +54,23 @@ class notificationService {
     }
   }
 
+  async getNotificationsByOrganizacion(organizacionId: number): Promise<INotificacionOrg[]> {
+      try {
+          const notifications = await NotificacionOrganizacion.find({
+              $or: [{ organizacionId }, { esGeneral: true }],
+              activo: true
+          });
+
+          return notifications;
+      } catch (error) {
+          console.error('Error al obtener notificaciones:', error);
+          return [];
+      }
+  }
+
   async getNotificationById(id: string): Promise<INotificacion | null> {
     try {
-      const notification = await Notificacion.findById(id);
+      const notification = await Notificacion.findOne({ _id: id, activo: true});
       return notification;
     } catch (error) {
       console.error('Error al obtener notificación:', error);
@@ -44,75 +78,23 @@ class notificationService {
     }
   }
 
-  public async assignEnfermeroToSolicitud(solicitudId: string, enfermeroId: string): Promise<void> {
+  async getOrgNotificationById(id: string): Promise<INotificacionOrg | null> {
     try {
-        const solicitud = await Solicitud.findById(solicitudId);
-        if (!solicitud) {
-            throw new Error('Solicitud no encontrada');
-        }
-
-        await this.createNotification(
-            enfermeroId,
-            'enfermero',
-            'Asignación de solicitud pendiente',
-            `Has sido asignado a la solicitud con ID ${solicitudId}. ¿Aceptarás o rechazarás la asignación?`,
-            'pendiente'
-        );
+      const notification = await NotificacionOrganizacion.findOne({ _id: id, activo: true});
+      return notification;
     } catch (error) {
-        console.error('Error asignando enfermero:', error);
-        throw error;
+      console.error('Error al obtener notificación:', error);
+      return null;
     }
-}
+  }
 
-public async answerAssignation(enfermeroId: number, notificacionId: string, solicitudId: string, answer: "aceptada" | "rechazada"): Promise<void> {
+  async markNotificationAsRead(id: string): Promise<void> {
     try {
-        const solicitud = await Solicitud.findById(solicitudId);
-        if (!solicitud) {
-            throw new Error('Solicitud no encontrada');
-        }
-
-        const notification = await Notificacion.findOne({
-            where: {
-                id: notificacionId,
-                receptorId: enfermeroId,
-                tipoReceptor: 'enfermero',
-                estadoAsignacion: 'pendiente'
-            }
-        });
-
-        if (!notification) {
-            throw new Error('Notificación no encontrada');
-        }
-
-        notification.estadoAsignacion = answer;
-        notification.leida = true;
-        await notification.save();
-
-        // if nurse answer, send notification to user
-        if (answer === 'aceptada') {
-
-            // Notificar al usuario que el enfermero aceptó
-            await this.createNotification(
-                solicitud.usuario_id.toString(),
-                'usuario',
-                'Enfermero asignado',
-                `El enfermero ${enfermeroId} ha aceptado tu solicitud ${solicitudId}.`,
-                'aceptada'
-            );
-        } else {
-            await this.createNotification(
-                solicitud.usuario_id.toString(),
-                'usuario',
-                'Enfermero rechazado',
-                `El enfermero ${enfermeroId} ha rechazado tu solicitud ${solicitudId}.`,
-               'rechazada'
-            );
-        }
+      await Notificacion.updateOne({ _id: id }, { leida: true });
     } catch (error) {
-        console.error('Error respondiendo asignación:', error);
-        throw error;
+      console.error('Error al marcar notificación como leída:', error);
     }
-}
+  }
 }
 
 export default new notificationService();

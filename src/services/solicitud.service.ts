@@ -11,6 +11,9 @@ import { EnfermeroSQL } from '../models/enfermeroSQL.model';
 import { generateConfirmationCode } from '../utils/randomCode';
 import Seguimiento from '../models/seguimientos.model';
 import { io } from '../app';
+import notificacionesService from "../services/notificaciones.service";
+import { NotificacionOrganizacion } from '../models/notificacionesOrg.model';
+import { Notificacion } from '../models/notificaciones.model';
 
 class SolicitudService {
     private async createSolicitudSQL(servicioId: number): Promise<SolicitudSQL> {
@@ -53,6 +56,13 @@ class SolicitudService {
                 throw new Error('Failed to create solicitud: solicitud_id is undefined');
             }
 
+            const notification = new NotificacionOrganizacion({
+                titulo: 'Nueva solicitud entrante',
+                contenido: 'Ha recibido una nueva solicitud médica. Pulse para visualizarla.',
+                general: true
+            })
+
+            await notification.save();
 
             return solicitudSQLId;
         } catch (error) {
@@ -123,6 +133,26 @@ class SolicitudService {
             solicitudMongo.estado = 'asignado';
 
             await solicitudMongo.save();
+
+            const notificationUser = new Notificacion({
+                receptorId: solicitudMongo.usuario_id,
+                tipoReceptor: 'usuario',
+                titulo: 'Su solicitud ha sido asignada.',
+                contenido: 'Su solicitud ha sido aceptada y asignada a un enfermero. Pulse para visualizar los detalles.',
+                estadoAsignacion: solicitudMongo.estado
+            })
+
+            await notificationUser.save();
+
+            const notificationEnfermero = new Notificacion({
+                receptorId: solicitudMongo.enfermero_id,
+                tipoReceptor: 'enfermero',
+                titulo: 'Nueva solicitud entrante',
+                contenido: 'Ha recibido una nueva solicitud médica. Pulse para visualizarla.',
+                estadoAsignacion: solicitudMongo.estado
+            })
+
+            await notificationEnfermero.save();
 
             // PostgreSQL save
             const solicitudRepository = AppDataSource.getRepository(SolicitudSQL);
@@ -236,7 +266,7 @@ class SolicitudService {
     // only use this route to update the status of the request if the nurse already accepted
     public async updateSolicitudStatus(solicitudId: number, status: string): Promise<any> {
         try {
-            const solicitudMongo = await Solicitud.findOne({ pg_solicitud_id : solicitudId });
+            const solicitudMongo = await Solicitud.findOne({ pg_solicitud_id: solicitudId });
             if (!solicitudMongo) {
                 throw new Error('Solicitud no encontrada en MongoDB');
             }
@@ -268,7 +298,33 @@ class SolicitudService {
                 await nuevoSeguimiento.save();
             }
 
-            //TODO: notificate the user
+            const notificationUser = new Notificacion({
+                receptorId: solicitudMongo.usuario_id,
+                tipoReceptor: 'usuario',
+                titulo: 'Actualización de solicitud',
+                contenido: `La solicitud ha cambiado de estado a ${status}`,
+                estadoAsignacion: solicitudMongo.estado,
+            });
+
+            await notificationUser.save();
+
+            const solicitudPg = await AppDataSource.getRepository(SolicitudSQL).findOne({
+                where: { solicitud_id: solicitudId },
+                relations: ['organizacion']
+            });
+
+            if (!solicitudPg) {
+                throw new Error('Solicitud no encontrada en PostgreSQL');
+            }
+
+            const notificationOrg = new NotificacionOrganizacion({
+                organizacionId: solicitudPg.organizacion_id,
+                titulo: 'Actualización de solicitud',
+                contenido: `La solicitud ha cambiado de estado a ${status}`,
+                estadoAsignacion: solicitudMongo.estado,
+            })
+
+            await notificationOrg.save();
 
             // emit event with websocket
             io.emit(`solicitud:${solicitudId}`, {estado: status, codigo_confirmacion: solicitudMongo.codigo_confirmacion });
@@ -373,6 +429,15 @@ class SolicitudService {
             solicitud.confirmado_enfermero = true;
             await solicitud.save();
 
+            const notification = new Notificacion({
+                receptorId: solicitud.usuario_id,
+                tipoReceptor: 'usuario',
+                titulo: 'Finalización de servicio',
+                contenido: 'El enfermero ha finalizado el servicio. Pulse para más detalles.',
+            });
+
+            await notification.save();
+
             if (solicitud.confirmado_usuario) {
                 await this.updateSolicitudStatus(solicitudId, 'finalizado');
             }
@@ -397,6 +462,15 @@ class SolicitudService {
 
             if (solicitud.confirmado_enfermero) {
                 await this.updateSolicitudStatus(solicitudId, 'finalizado');
+
+                const notification = new Notificacion({
+                    receptorId: solicitud.enfermero_id,
+                    tipoReceptor: 'enfermero',
+                    titulo: 'Confirmación de finalización de servicio',
+                    contenido: 'El usuario ha confirmado la finalización del servicio. Pulse para más detalles.',
+                });
+
+                await notification.save();
             }
 
             return true;
