@@ -57,7 +57,7 @@ class notificationService {
   async getNotificationsByOrganizacion(organizacionId: number): Promise<INotificacionOrg[]> {
       try {
           const notifications = await NotificacionOrganizacion.find({
-              $or: [{ organizacionId }, { esGeneral: true }],
+              $or: [{ organizacionId }, { general: true }],
               activo: true
           });
 
